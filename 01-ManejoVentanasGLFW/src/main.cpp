@@ -134,7 +134,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int state, int mod) {
 		switch (button) {
 		case GLFW_MOUSE_BUTTON_RIGHT:
 			std::cout << "lastMousePos.y:" << lastMousePosY << std::endl;
-			glClearColor(0.0, 1.0, 0.0, 0.0);
 			//colorStatus++;
 			break;
 		case GLFW_MOUSE_BUTTON_LEFT:
