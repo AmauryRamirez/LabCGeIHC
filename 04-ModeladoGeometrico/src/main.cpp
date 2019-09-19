@@ -248,112 +248,206 @@ void applicationLoop() {
 		cylinder1.enableWireMode();*/
 		
 		//CAJITA------------------
-		//box1.enableWireMode();
-		box1.render(scale(model, glm::vec3(1.0, 1.0, 0.1)));
-		//----------------------
-		//ARTICULACIÓN 1-----------------------------------------------
-		glm::mat4 j1 = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-		sphere2.enableWireMode();
-		sphere2.render(glm::scale(j1, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//HUESO1
-		glm::mat4 L1 = glm::translate(j1, glm::vec3(0.25, 0.0, 0.0));
-		L1 = glm::rotate(L1, glm::radians(90.0f), glm::vec3(0, 0, 1.0));
-		cylinder1.enableWireMode();
-		cylinder1.render(glm::scale(L1, glm::vec3(0.1, 0.5, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN 2
-		glm::mat4 j2 = glm::translate(j1, glm::vec3(0.25, 0.0f, 0.0f)); //j2 va a depender de j1
-		sphere3.enableWireMode();
-		sphere3.render(glm::scale(j2, glm::vec3(0.1, 0.1, 0.1)));
-		//------------------------------------------------------
+				box1.enableWireMode();
+				box1.render(scale(model, glm::vec3(1.0, 1.0, 0.1)));
+
+
 		//PUPILA OJOS
-		glm::mat4 pupila1 = glm::translate(model, glm::vec3(0.25, 0.25, 0.065f)); //ojo se va a mover con el modelo, depende del modelo.
-		//sphere1.enableWireMode();						//HACE QUE SE VEA CON LINEAS
-		sphere1.render(glm::scale(pupila1, glm::vec3(0.1, 0.1, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+				glm::mat4 pupila1 = glm::translate(model, glm::vec3(0.25, 0.25, 0.065f)); //ojo se va a mover con el modelo, depende del modelo.
+				//sphere1.enableWireMode();						//HACE QUE SE VEA CON LINEAS
+				sphere1.render(glm::scale(pupila1, glm::vec3(0.1, 0.1, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+
 		//PUPILA2----------------------------------------------
-		glm::mat4 pupila2 = glm::translate(model, glm::vec3(-0.25, 0.25, 0.065f)); //ojo se va a mover con el modelo, depende del modelo.
-		//sphere1.enableWireMode();						//HACE QUE SE VEA CON LINEAS
-		sphere1.render(glm::scale(pupila2, glm::vec3(0.1, 0.1, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+				glm::mat4 pupila2 = glm::translate(model, glm::vec3(-0.25, 0.25, 0.065f)); //ojo se va a mover con el modelo, depende del modelo.
+				//sphere1.enableWireMode();						//HACE QUE SE VEA CON LINEAS
+				sphere1.render(glm::scale(pupila2, glm::vec3(0.1, 0.1, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
 
-																		
 		//OJO dDERECHO
-		glm::mat4 ojo = glm::translate(model, glm::vec3(0.25, 0.25, 0.05f)); //ojo se va a mover con el modelo, depende del modelo.
-		//sphere2.enableWireMode();						//HACE QUE SE VEA CON LINEAS
-		sphere2.render(glm::scale(ojo, glm::vec3(0.2, 0.2, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+				glm::mat4 ojo = glm::translate(model, glm::vec3(0.25, 0.25, 0.05f)); //ojo se va a mover con el modelo, depende del modelo.
+				//sphere2.enableWireMode();						//HACE QUE SE VEA CON LINEAS
+				sphere2.render(glm::scale(ojo, glm::vec3(0.2, 0.2, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+
 		//OJO IZQUIERDO------------------------
-		glm::mat4 ojo2 = glm::translate(model, glm::vec3(-0.25, 0.25, 0.05f)); //ojo se va a mover con el modelo, depende del modelo.
-		//phere2.enableWireMode();						//HACE QUE SE VEA CON LINEAS
-		sphere2.render(glm::scale(ojo2, glm::vec3(0.2, 0.2, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
-		//ARTICULACIÓN LADO DERECHO-----------------------------------------------
-		glm::mat4 j3 = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
-		sphere2.enableWireMode();
-		sphere2.render(glm::scale(j3, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//HUSEO 2 BRAZO DERECHO-----------
-		glm::mat4 L2 = glm::translate(j3, glm::vec3(-0.215, -0.1223, 0.0));
-		L2 = glm::rotate(L2, glm::radians(120.0f), glm::vec3(0, 0, 1.0));
-		cylinder1.enableWireMode();
-		cylinder1.render(glm::scale(L2, glm::vec3(0.1, 0.5, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN 2 CODO DERECHO
-		glm::mat4 j4 = glm::translate(j3, glm::vec3(-0.432, -0.248, 0.0f)); //j2 va a depender de j1
-		sphere3.enableWireMode();
-		sphere3.render(glm::scale(j4, glm::vec3(0.1, 0.1, 0.1)));
-		//------------------------------------------------------
-		///HUESO2
-		glm::mat4 L3 = glm::translate(j4, glm::vec3(-0.166, 0.164, 0.0));
-		L3 = glm::rotate(L3, glm::radians(45.0f), glm::vec3(0, 0, 1.0));
-		cylinder1.enableWireMode();
-		cylinder1.render(glm::scale(L3, glm::vec3(0.1, 0.5, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN PIE IZQ ALTO-----------------------------------------------
-		glm::mat4 j5 = glm::translate(model, glm::vec3(0.25f, -0.5f, 0.0f));
-		sphere1.enableWireMode();
-		sphere1.render(glm::scale(j5, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//HUESO5
-		glm::mat4 L4 = glm::translate(j5, glm::vec3(0.0, -0.25, 0.0));
-		L4 = glm::rotate(L4, glm::radians(0.0f), glm::vec3(0, 0, 1.0));
-		cylinder1.enableWireMode();
-		cylinder1.render(glm::scale(L4, glm::vec3(0.1, 0.5, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN PIE DER-----------------------------------------------
-		glm::mat4 j6 = glm::translate(model, glm::vec3(-0.25f, -0.5f, 0.0f));
-		sphere1.enableWireMode();
-		sphere1.render(glm::scale(j6, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//HUESO5
-		glm::mat4 L5 = glm::translate(j6, glm::vec3(0.0, -0.25, 0.0));
-		L5 = glm::rotate(L5, glm::radians(0.0f), glm::vec3(0, 0, 1.0));
-		cylinder1.enableWireMode();
-		cylinder1.render(glm::scale(L5, glm::vec3(0.1, 0.5, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN PIE IZQ RODILLA-----------------------------------------------
-		glm::mat4 j7 = glm::translate(model, glm::vec3(0.25f, -0.75f, 0.0f));
-		sphere3.enableWireMode();
-		sphere3.render(glm::scale(j7, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN PIE DER RODILLA-----------------------------------------------
-		glm::mat4 j8 = glm::translate(model, glm::vec3(-0.25f, -0.75f, 0.0f));
-		sphere3.enableWireMode();
-		sphere3.render(glm::scale(j8, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN ZAPATO DERECHO-----------------------------------------------
-		glm::mat4 j9 = glm::translate(model, glm::vec3(-0.25f, -1.0f, 0.0f));
-		sphere1.enableWireMode();
-		sphere1.render(glm::scale(j9, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
-		//ARTICULACIÓN ZAPATO DERECHO-----------------------------------------------
-		glm::mat4 j10 = glm::translate(model, glm::vec3(0.25f, -1.0f, 0.0f));
-		sphere1.enableWireMode();
-		sphere1.render(glm::scale(j10, glm::vec3(0.1, 0.1, 0.1)));
-		//--------------------------------------------------------------------
+				glm::mat4 ojo2 = glm::translate(model, glm::vec3(-0.25, 0.25, 0.05f)); //ojo se va a mover con el modelo, depende del modelo.
+				//phere2.enableWireMode();						//HACE QUE SE VEA CON LINEAS
+				sphere2.render(glm::scale(ojo2, glm::vec3(0.2, 0.2, 0.1)));	//MUESTRA L FIGURA PERO LA DEBE ESCALAR CON SCALE
+
+
+
+		
+		//HOMBRO IAZQUIERO-----------------------------------------------
+				glm::mat4 j1 = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
+				sphere2.enableWireMode();
+				sphere2.render(glm::scale(j1, glm::vec3(0.1, 0.1, 0.1)));
+		
+		//ANTEBRAZO IZQ
+				glm::mat4 L1 = glm::translate(j1, glm::vec3(0.25, 0.0, 0.0));
+				L1 = glm::rotate(L1, glm::radians(90.0f), glm::vec3(0, 0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L1, glm::vec3(0.1, 0.5, 0.1)));
+		
+		//CODO IZQ
+				glm::mat4 j2 = glm::translate(j1, glm::vec3(0.5, 0.0f, 0.0f)); //j2 va a depender de j1
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j2, glm::vec3(0.1, 0.1, 0.1)));
+		
+		//BRAZO IZQUIERDO
+				glm::mat4 L2 = glm::translate(j2, glm::vec3(0.25, 0.0, 0.0));
+				L2 = glm::rotate(L2, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L2, glm::vec3(0.1, 0.5, 0.1)));
+			
+		
+
+		//HOMBRO DERECHO
+				glm::mat4 j3 = glm::translate(model, glm::vec3(-0.5, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j3, glm::vec3(0.1, 0.1, 0.1)));
+
+		//ANTEBRAZO DERECHO
+				glm::mat4 L3 = glm::translate(j3, glm::vec3(-0.25, 0.0, 0.0));
+				L3 = glm::rotate(L3, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L3, glm::vec3(0.1, 0.5, 0.1)));
+
+		//CODO DERECHO
+				glm::mat4 j4 = glm::translate(j3, glm::vec3(-0.5, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j4, glm::vec3(0.1, 0.1, 0.1)));
+
+		//BRAZO DERECHO
+				glm::mat4 L4 = glm::translate(j4, glm::vec3(-0.25, 0.0, 0.0));
+				L4 = glm::rotate(L4, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L4, glm::vec3(0.1, 0.5, 0.1)));
+		//MANO DERECHA
+				glm::mat4 MD = glm::translate(j4, glm::vec3(-0.5, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(MD, glm::vec3(0.1, 0.1, 0.1)));
+
+
+
+		//PELVIS PIE DERECHO
+				glm::mat4 j5 = glm::translate(model, glm::vec3(-0.25, -0.5, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j5, glm::vec3(0.1, 0.1, 0.1)));
+	
+		//PIERNA DERECHA
+				glm::mat4 L5 = glm::translate(j5, glm::vec3(0.0, -0.25, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L5, glm::vec3(0.1, 0.5, 0.1)));
+
+		//RODILLA DERECHA
+				glm::mat4 j7 = glm::translate(j5, glm::vec3(0.0, -0.5, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j7, glm::vec3(0.1, 0.1, 0.1)));
+
+		//CHAMORRO DERECHO
+				glm::mat4 L6 = glm::translate(j7, glm::vec3(0.0, -0.25, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L6, glm::vec3(0.1, 0.5, 0.1)));
 
 		
 
+		//PELVIS IZQUIERDA
+				glm::mat4 j6 = glm::translate(model, glm::vec3(0.25, -0.5, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j6, glm::vec3(0.1, 0.1, 0.1)));
+
+		//PIERNA DERECHA
+				glm::mat4 L7 = glm::translate(j6, glm::vec3(0.0, -0.25, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L7, glm::vec3(0.1, 0.5, 0.1)));
+
+		//RODILLA DERECHA
+				glm::mat4 j8 = glm::translate(j6, glm::vec3(0.0, -0.5, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(j8, glm::vec3(0.1, 0.1, 0.1)));
+
+		//CHAMORRO DERECHO
+				glm::mat4 L8 = glm::translate(j8, glm::vec3(0.0, -0.25, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(L8, glm::vec3(0.1, 0.5, 0.1)));
+				
 		
+				
+		//MANO DERECHA DEDO 1
+				glm::mat4 D1 = glm::translate(MD, glm::vec3(-0.05, 0.05, 0.0));
+				D1 = glm::rotate(D1, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D1, glm::vec3(0.02, 0.04, 0.02)));
 		
+		//DEDO 1 HUESO UNION
+				glm::mat4 jd1 = glm::rotate(MD, glm::radians(45.0f), glm::vec3(0.0, 0.0, 0.1));
+				jd1 = glm::translate(jd1, glm::vec3(0.0, 0.09, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jd1, glm::vec3(0.02, 0.02, 0.02)));
+				
+		//DEDO DERECHO SEGUNDA PARTE
+				glm::mat4 D1b;
+				D1b = glm::translate(jd1, glm::vec3(0.0, 0.02, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D1b, glm::vec3(0.02, 0.04, 0.02)));
+		
+		//DEDO DERECHO FIN
+				glm::mat4 jd2;
+				jd2 = glm::translate(jd1, glm::vec3(0.0, 0.04, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jd2, glm::vec3(0.02, 0.02, 0.02)));
+
+
+				
+		//MANO DERECHA DEDO 2
+				glm::mat4 D2 = glm::translate(MD, glm::vec3(-0.05, 0.0, -0.05));
+				D2 = glm::rotate(D2, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				D2 = glm::rotate(D2, glm::radians(-45.0f), glm::vec3(1.0, 0.0, 0.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D2, glm::vec3(0.02, 0.04, 0.02)));
+
+		//MANO DERECHA 2 HUESO UNION
+				glm::mat4 jdb = glm::rotate(MD, glm::radians(-45.0f), glm::vec3(0.0, 1.0, 0.0));
+				jdb = glm::translate(jdb, glm::vec3(-0.09, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jdb, glm::vec3(0.02, 0.02, 0.02)));
+
+		//MANO DERECHA SEGUNDA PARTE
+				glm::mat4 D2b = glm::translate(jdb, glm::vec3(-0.02, 0.0, 0.0));
+				D2b = glm::rotate(D2b, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D2b, glm::vec3(0.02, 0.04, 0.02)));
+
+		//MANO DERECHA FIN
+				glm::mat4 jdb2 = glm::translate(jdb, glm::vec3(-0.04, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jdb2, glm::vec3(0.02, 0.02, 0.02)));
+
+
+
+		//MANO DERECHA DEDO 3
+				glm::mat4 D3 = glm::translate(MD, glm::vec3(-0.05, -0.05, 0.0));
+				D3 = glm::rotate(D3, glm::radians(135.0f), glm::vec3(0.0, 0.0, 1.0));	
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D3, glm::vec3(0.02, 0.04, 0.02)));
+
+		//MANO DERECHA HUESO UNION
+				glm::mat4 jdc = glm::rotate(MD, glm::radians(45.0f), glm::vec3(0.0, 0.0, 0.1));
+				jdc = glm::translate(jdc, glm::vec3(-0.09, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jdc, glm::vec3(0.02, 0.02, 0.02)));
+
+		//MANO DERECHA SEGUNDA PARTE
+				glm::mat4 D3b = glm::translate(jdc, glm::vec3(-0.02, 0.0, 0.0));
+				D3b = glm::rotate(D3b, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+				cylinder1.enableWireMode();
+				cylinder1.render(glm::scale(D3b, glm::vec3(0.02, 0.04, 0.02)));
+			
+		//MANO DERECHA FIN
+				glm::mat4 jdc2 = glm::translate(jdc, glm::vec3(-0.04, 0.0, 0.0));
+				sphere3.enableWireMode();
+				sphere3.render(glm::scale(jdc2, glm::vec3(0.02, 0.02, 0.02)));
+
+
+
 		shader.turnOff();
 		glfwSwapBuffers(window);
 	}
