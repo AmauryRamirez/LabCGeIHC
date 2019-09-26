@@ -36,6 +36,9 @@
     <ClCompile Include="src\FirstPersonCamera.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\AbstractModel.h">
@@ -62,12 +65,21 @@
     <ClInclude Include="src\Headers\FirstPersonCamera.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\Headers\Texture.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\colorShader.fs">
       <Filter>Archivos de recursos</Filter>
     </None>
     <None Include="..\Shaders\colorShader.vs">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="..\Shaders\texturizado.fs">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="..\Shaders\texturizado.vs">
       <Filter>Archivos de recursos</Filter>
     </None>
   </ItemGroup>
