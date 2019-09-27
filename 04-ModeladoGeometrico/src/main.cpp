@@ -19,6 +19,7 @@
 #include "Headers/Cylinder.h"
 #include "Headers/Box.h"
 #include "Headers/FirstPersonCamera.h"
+#include "Headers/Texture.h"
 
 
 //GLM include
@@ -33,6 +34,7 @@ int screenHeight;
 GLFWwindow * window;
 std::shared_ptr<FirstPersonCamera> camera(new FirstPersonCamera());
 Shader shader;
+Shader shaderTexture;
 
 Sphere sphere1(20, 20);
 Sphere sphere2(20, 20);
@@ -40,11 +42,19 @@ Sphere sphere3(20, 20);
 Cylinder cylinder1(20, 20, 0.5, 0.5);
 Box box1;
 
+GLuint textureEsponja;
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
+
+float HomIzArriba = 0.0, CodoIzArriba = 0.0, HomDerArriba = 0.0, CodoDerArriba = 0.0; //agrega movimiento a las articulaciones
+float HomIzFrente = 0.0, CodoIzFrente = 0.0, HomDerFrente = 0.0, CodoDerFrente = 0.0 ; //MOVIMIENTOS EN EJE Z
+float PelvisDerArriba = 0.0, PelvisDerFrente = 0.0, RodDerArriba = 0.0, RodDerFrente = 0.0;
+float PelvisIzqArriba = 0.0, PelvisIzqFrente = 0.0, RodIzqArriba = 0.0, RodIzqFrente = 0.0;
+float DA0 = 0.0, DA1 = 0.0, DA2 = 0.0, DB0 = 0.0, DB1 = 0.0, DB2 = 0.0, DC0 = 0.0, DC1 = 0.0, DC2 = 0.0;
+bool sentido = true;
 
 double deltaTime;
 
@@ -111,38 +121,52 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	glEnable(GL_CULL_FACE);
 
 	shader.initialize("../Shaders/colorShader.vs", "../Shaders/colorShader.fs");
+	shaderTexture.initialize("../Shaders/texturizado.vs", "../Shaders/texturizado.fs");
 
-	// INICIALIZAR LOS BUFFERS VAO, VBO, EBO
 	sphere1.init();
-	// MÉTODO SETTER QUE COLOCA EL APUNTADOR AL SHADER QUE VAMOS A  OCUPAR. 
 	sphere1.setShader(&shader);
-	//sETTER PARA PONER EL COLOR DE LA GEOMETRÍA
 	sphere1.setColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 
-	// INICIALIZAR LOS BUFFERS VAO, VBO, EBO ESFERA 2
 	sphere2.init();
-	// MÉTODO SETTER QUE COLOCA EL APUNTADOR AL SHADER QUE VAMOS A  OCUPAR. 
 	sphere2.setShader(&shader);
-	//sETTER PARA PONER EL COLOR DE LA GEOMETRÍA
 	sphere2.setColor(glm::vec4(255, 255, 255, 1.0));
 
-	// INICIALIZAR LOS BUFFERS VAO, VBO, EBO ESFERA 2
 	sphere3.init();
-	// MÉTODO SETTER QUE COLOCA EL APUNTADOR AL SHADER QUE VAMOS A  OCUPAR. 
 	sphere3.setShader(&shader);
-	//sETTER PARA PONER EL COLOR DE LA GEOMETRÍA
 	sphere3.setColor(glm::vec4(255, 255, 0, 1.0));
 
-
-	//
 	cylinder1.init();
 	cylinder1.setShader(&shader);
 	cylinder1.setColor(glm::vec4(255, 255, 0.0, 1.0));
 
 	box1.init();
-	box1.setShader(&shader);
+	box1.setShader(&shaderTexture);
 	box1.setColor(glm::vec4(255, 255, 0, 1.0));
 	camera->setPosition(glm::vec3(2.0, 0.0, 4.0));
+
+	// Definimos el tamanio de la imagen
+	int imageWidth, imageHeight;
+	Texture textureSponja("../Textures/sponge.jpg");
+	FIBITMAP *bitmap = textureSponja.loadImage();
+	unsigned char *data = textureSponja.convertToData(bitmap, imageWidth,
+		imageHeight);
+	glGenTextures(1, &textureEsponja);
+	glBindTexture(GL_TEXTURE_2D, textureEsponja);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	// Libera la memoria de la textura
+	textureSponja.freeImage(bitmap);
+
+
 }
 
 void destroy() {
@@ -152,6 +176,8 @@ void destroy() {
 	// Eliminar los shader y buffers creados.
 
 	sphere1.destroy();
+	sphere2.destroy();
+	sphere3.destroy();
 	cylinder1.destroy(); //MANDA A EJECUTAR TODOS LOS DESTRUCTORES DE LOS VAO, EBO Y VBO
 	box1.destroy();		//ESTO PARA LIBERAR LA MEMORIA
 
@@ -219,6 +245,104 @@ bool processInput(bool continueApplication){
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		camera->mouseMoveCamera(offsetX, offsetY, 0.0001);
 
+	offsetX = 0;
+	offsetY = 0;
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			sentido = false;
+
+	//MOVIMIENTO HOMBRO IZQUIERDO 1- EJE XY  2- EJE XZ
+		if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			HomIzArriba += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			HomIzArriba -= 0.001;
+		if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			HomIzFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			HomIzFrente += 0.001;
+	//MOVIMINETO CODO IZQUIERDO
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			CodoIzArriba += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			CodoIzArriba -= 0.001;
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			CodoIzFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			CodoIzFrente += 0.001;
+	//MOVIMIENTO HOMBRO DERECHO 
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			HomDerArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			HomDerArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			HomDerFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			HomDerFrente += 0.001;
+	//MOVIMIENTO CODO DERECHO
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			CodoDerArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			CodoDerArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			CodoDerFrente += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			CodoDerFrente -= 0.001;
+	
+	//MOVIMIENTO PIE DERECHO
+		if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			PelvisDerArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			PelvisDerArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			PelvisDerFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			PelvisDerFrente += 0.001;
+	//MOVIMIENTO RODILLA DERECHA
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			RodDerArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			RodDerArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			RodDerFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			RodDerFrente += 0.001;
+
+	//MOVIMIENTO PIE IZQUIERDO
+		if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			PelvisIzqArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			PelvisIzqArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			PelvisIzqFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			PelvisIzqFrente += 0.001;
+	//MOVIMIENTO RODILLA IZQUIERD
+		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			RodIzqArriba -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			RodIzqArriba += 0.001;
+		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			RodIzqFrente -= 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			RodIzqFrente += 0.001;
+	//MOIMIENTO DEDO1
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && sentido)
+			DA0 += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && !sentido)
+			DA0 -= 0.001;
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && sentido)
+			DA1 += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && !sentido)
+			DA1 -= 0.001;
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && sentido)
+			DA2 += 0.001;
+		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && !sentido)
+			DA2 -= 0.001;
+
+
+
+	sentido = true;
+
 	glfwPollEvents();
 	return continueApplication;
 }
@@ -248,8 +372,10 @@ void applicationLoop() {
 		cylinder1.enableWireMode();*/
 		
 		//CAJITA------------------
-				box1.enableWireMode();
+				//box1.enableWireMode();
+				glBindTexture(GL_TEXTURE_2D, textureEsponja);
 				box1.render(scale(model, glm::vec3(1.0, 1.0, 0.1)));
+				
 
 
 		//PUPILA OJOS
@@ -274,11 +400,12 @@ void applicationLoop() {
 
 
 
-		
 		//HOMBRO IAZQUIERO-----------------------------------------------
 				glm::mat4 j1 = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
 				sphere2.enableWireMode();
 				sphere2.render(glm::scale(j1, glm::vec3(0.1, 0.1, 0.1)));
+				j1 = glm::rotate(j1, HomIzArriba,glm::vec3(0.0, 0.0, 1));
+				j1 = glm::rotate(j1, HomIzFrente, glm::vec3(0.0, 1.0, 0.0));
 		
 		//ANTEBRAZO IZQ
 				glm::mat4 L1 = glm::translate(j1, glm::vec3(0.25, 0.0, 0.0));
@@ -290,6 +417,8 @@ void applicationLoop() {
 				glm::mat4 j2 = glm::translate(j1, glm::vec3(0.5, 0.0f, 0.0f)); //j2 va a depender de j1
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j2, glm::vec3(0.1, 0.1, 0.1)));
+				j2 = glm::rotate(j2, CodoIzArriba ,glm::vec3(0.0, 0.0, 1));
+				j2 = glm::rotate(j2, CodoIzFrente ,glm::vec3(0.0, 1.0, 0.0));
 		
 		//BRAZO IZQUIERDO
 				glm::mat4 L2 = glm::translate(j2, glm::vec3(0.25, 0.0, 0.0));
@@ -303,6 +432,8 @@ void applicationLoop() {
 				glm::mat4 j3 = glm::translate(model, glm::vec3(-0.5, 0.0, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j3, glm::vec3(0.1, 0.1, 0.1)));
+				j3 = glm::rotate(j3, HomDerArriba, glm::vec3(0.0, 0.0, 1.0));
+				j3 = glm::rotate(j3, HomDerFrente, glm::vec3(0.0, 1.0, 0.0));
 
 		//ANTEBRAZO DERECHO
 				glm::mat4 L3 = glm::translate(j3, glm::vec3(-0.25, 0.0, 0.0));
@@ -314,23 +445,28 @@ void applicationLoop() {
 				glm::mat4 j4 = glm::translate(j3, glm::vec3(-0.5, 0.0, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j4, glm::vec3(0.1, 0.1, 0.1)));
+				j4 = glm::rotate(j4, CodoDerArriba, glm::vec3(0.0, 0.0, 1.0));
+				j4 = glm::rotate(j4, CodoDerFrente, glm::vec3(0.0, 1.0, 0.0));
 
 		//BRAZO DERECHO
 				glm::mat4 L4 = glm::translate(j4, glm::vec3(-0.25, 0.0, 0.0));
 				L4 = glm::rotate(L4, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 				cylinder1.enableWireMode();
 				cylinder1.render(glm::scale(L4, glm::vec3(0.1, 0.5, 0.1)));
+
 		//MANO DERECHA
 				glm::mat4 MD = glm::translate(j4, glm::vec3(-0.5, 0.0, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(MD, glm::vec3(0.1, 0.1, 0.1)));
 
-
+//-----------------------------------------------------------------------------------------------------
 
 		//PELVIS PIE DERECHO
 				glm::mat4 j5 = glm::translate(model, glm::vec3(-0.25, -0.5, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j5, glm::vec3(0.1, 0.1, 0.1)));
+				j5 = glm::rotate(j5, PelvisDerArriba, glm::vec3(1.0, 0.0, 0.0));
+				j5 = glm::rotate(j5, PelvisDerFrente, glm::vec3(0.0, 0.1, 0.0));
 	
 		//PIERNA DERECHA
 				glm::mat4 L5 = glm::translate(j5, glm::vec3(0.0, -0.25, 0.0));
@@ -341,6 +477,8 @@ void applicationLoop() {
 				glm::mat4 j7 = glm::translate(j5, glm::vec3(0.0, -0.5, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j7, glm::vec3(0.1, 0.1, 0.1)));
+				j7 = glm::rotate(j7, RodDerArriba, glm::vec3(1.0, 0.0, 0.0));
+				j7 = glm::rotate(j7, RodDerFrente, glm::vec3(0.0, 1.0, 0.0));
 
 		//CHAMORRO DERECHO
 				glm::mat4 L6 = glm::translate(j7, glm::vec3(0.0, -0.25, 0.0));
@@ -353,6 +491,8 @@ void applicationLoop() {
 				glm::mat4 j6 = glm::translate(model, glm::vec3(0.25, -0.5, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j6, glm::vec3(0.1, 0.1, 0.1)));
+				j6 = glm::rotate(j6, PelvisIzqArriba, glm::vec3(1.0, 0.0, 0.0));
+				j6 = glm::rotate(j6, PelvisIzqFrente, glm::vec3(0.0, 1.0, 0.0));
 
 		//PIERNA DERECHA
 				glm::mat4 L7 = glm::translate(j6, glm::vec3(0.0, -0.25, 0.0));
@@ -363,6 +503,8 @@ void applicationLoop() {
 				glm::mat4 j8 = glm::translate(j6, glm::vec3(0.0, -0.5, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(j8, glm::vec3(0.1, 0.1, 0.1)));
+				j8 = glm::rotate(j8, RodIzqArriba, glm::vec3(1.0, 0.0, 0.0));
+				j8 = glm::rotate(j8, RodIzqFrente, glm::vec3(0.0, 1.0, 0.0));
 
 		//CHAMORRO DERECHO
 				glm::mat4 L8 = glm::translate(j8, glm::vec3(0.0, -0.25, 0.0));
@@ -382,6 +524,7 @@ void applicationLoop() {
 				jd1 = glm::translate(jd1, glm::vec3(0.0, 0.09, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(jd1, glm::vec3(0.02, 0.02, 0.02)));
+				jd1 = glm::rotate(jd1, DA0, glm::vec3(1.0, 0.0, 0.0));
 				
 		//DEDO DERECHO SEGUNDA PARTE
 				glm::mat4 D1b;
@@ -395,8 +538,6 @@ void applicationLoop() {
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(jd2, glm::vec3(0.02, 0.02, 0.02)));
 
-
-				
 		//MANO DERECHA DEDO 2
 				glm::mat4 D2 = glm::translate(MD, glm::vec3(-0.05, 0.0, -0.05));
 				D2 = glm::rotate(D2, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
@@ -409,6 +550,7 @@ void applicationLoop() {
 				jdb = glm::translate(jdb, glm::vec3(-0.09, 0.0, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(jdb, glm::vec3(0.02, 0.02, 0.02)));
+				jdb = glm::rotate(jdb, DA1, glm::vec3(0.0, 1.0, 0.0));
 
 		//MANO DERECHA SEGUNDA PARTE
 				glm::mat4 D2b = glm::translate(jdb, glm::vec3(-0.02, 0.0, 0.0));
@@ -434,6 +576,7 @@ void applicationLoop() {
 				jdc = glm::translate(jdc, glm::vec3(-0.09, 0.0, 0.0));
 				sphere3.enableWireMode();
 				sphere3.render(glm::scale(jdc, glm::vec3(0.02, 0.02, 0.02)));
+				jdc = glm::rotate(jdc, DA2, glm::vec3(0.0, 1.0, 0.0));
 
 		//MANO DERECHA SEGUNDA PARTE
 				glm::mat4 D3b = glm::translate(jdc, glm::vec3(-0.02, 0.0, 0.0));
