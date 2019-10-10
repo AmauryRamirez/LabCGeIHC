@@ -29,6 +29,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Headers/Texture.h"
+//Include loader model Class
+#include "Headers/Model.h"
 
 #define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 
@@ -68,6 +70,12 @@ Box boxMaterials;
 Box box1;
 Box box2;
 Box box3;
+
+//Models complex instances 
+Model modelRock;
+Model modelRailRoad;
+Model modelAircraft_obj;
+Model modelDinosaurio;
 
 GLuint textureID1, textureID2, textureID3, textureID4;
 GLuint skyboxTextureID;
@@ -217,17 +225,31 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	box1.init();
 	// Settea el shader a utilizar
-	box1.setShader(&shaderTextureLighting);
+	box1.setShader(&shaderMulLighting);
 	box1.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
 
 	box2.init();
-	box2.setShader(&shaderTextureLighting);
+	box2.setShader(&shaderMulLighting);
 
 	sphere3.init();
 	sphere3.setShader(&shaderTextureLighting);
 
 	box3.init();
 	box3.setShader(&shaderTextureLighting);
+
+	//INITIALIZACION MODELS
+	modelRock.loadModel("../models/rock/rock.obj");
+	modelRock.setShader(&shaderMulLighting);
+
+	modelRailRoad.loadModel("../models/railroad/railroad_track.obj");
+	modelRailRoad.setShader(&shaderMulLighting);
+
+	modelAircraft_obj.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
+	modelAircraft_obj.setShader(&shaderMulLighting);
+
+
+	modelDinosaurio.loadModel("../models/Dinosaurio/Nightstand.obj");
+	modelDinosaurio.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 4.0));
 
@@ -545,7 +567,7 @@ void applicationLoop() {
 		shaderMulLighting.setMatrix4("projection", 1, false,
 					glm::value_ptr(projection));
 		shaderMulLighting.setMatrix4("view", 1, false,
-				glm::value_ptr(glm::mat4(glm::mat3(view))));
+				glm::value_ptr(view));
 
 		// Propiedades de la luz para objetos con color
 		shaderColorLighting.setVectorFloat3("viewPos",
@@ -579,6 +601,21 @@ void applicationLoop() {
 		shaderMulLighting.setVectorFloat3("directionalLight.light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 		shaderMulLighting.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.9, 0.9, 0.9)));
 		shaderMulLighting.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(0.0, 0.0, -1.0)));
+
+		//ESTO ES PARA LA LUZ SPOTLIGHT
+		shaderMulLighting.setInt("spotLightCount", 1);
+		shaderMulLighting.setVectorFloat3("spotLights[0].position",glm::value_ptr(camera->getPosition()));
+		shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(camera->getFront()));
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.4, 0.4))); 
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.6, 0.6, 0.6)));
+		shaderMulLighting.setFloat("spotLights[0].cutOff", cos(glm::radians(12.5)));
+		shaderMulLighting.setFloat("spotLights[0].outerCutOff", cos(glm::radians(17.0)));
+		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
+		shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
+		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.05);
+
+
 
 		glm::mat4 lightModelmatrix = glm::rotate(glm::mat4(1.0f), angle,
 				glm::vec3(1.0f, 0.0f, 0.0f));
@@ -655,7 +692,7 @@ void applicationLoop() {
 		modelAgua = glm::scale(modelAgua, glm::vec3(5.0, 0.01, 5.0));
 		// Se activa la textura del agua
 		glBindTexture(GL_TEXTURE_2D, textureID2);
-		shaderTexture.setFloat("offsetX", offX);
+		shaderMulLighting.setFloat("offsetX", offX);
 		box2.render(modelAgua);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		shaderTexture.setFloat("offsetX", 0);
@@ -714,6 +751,39 @@ void applicationLoop() {
 		shaderMaterialLighting.setVectorFloat3("material.specular", glm::value_ptr(glm::vec3(0.727811f, 0.626959f, 0.626959f)));
 		shaderMaterialLighting.setFloat("material.shininess", 76.8f);
 		boxMaterials.render(boxMaterialModel);
+
+
+		//MODEL COMPLEX RENDER
+		glm::mat4 matModelRock = glm::mat4(1.0);
+		matModelRock = glm::translate(matModelRock, glm::vec3(-3.0, 0.0, 4.0));
+		shaderMulLighting.setFloat("offsetX", 0);
+		modelRock.render(matModelRock);
+		//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+		glActiveTexture(GL_TEXTURE0);
+
+		//MODEL VIAS DEL TREN
+		glm::mat4 matrailroad = glm::mat4(1.0);
+		matrailroad = glm::translate(matrailroad, glm::vec3(3.0, 0.0, 4.0));
+		shaderMulLighting.setFloat("offsetX", 0);
+		modelRailRoad.render(matrailroad);
+		//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+		glActiveTexture(GL_TEXTURE0);
+
+		/*//MODEL Aircraft_obj
+		glm::mat4 matAircraft_obj = glm::mat4(1.0);
+		matAircraft_obj = glm::translate(matAircraft_obj, glm::vec3(3.0, 4.0, 4.0));
+		shaderMulLighting.setFloat("offsetX", 0);
+		modelAircraft_obj.render(matAircraft_obj);
+		//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+		glActiveTexture(GL_TEXTURE0);*/
+
+		glm::mat4 matDino = glm::mat4(1.0);
+		matDino = glm::translate(matDino, glm::vec3(3.0, 4.0, 4.0));
+		shaderMulLighting.setFloat("offsetX", 0);
+		modelDinosaurio.render(matDino);
+		//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+		glActiveTexture(GL_TEXTURE0);
+
 
 
 		if (angle > 2 * M_PI)
