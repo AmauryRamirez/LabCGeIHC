@@ -189,7 +189,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Libera la memoria de la textura
 	texture1.freeImage(bitmap);
 
-
+	//------------------------------------------------------------------------------------------
 	Texture texture2("../Textures/sponge.jpg");
 	bitmap = texture2.loadImage(false);
 	data = texture2.convertToData(bitmap, imageWidth, imageHeight);
