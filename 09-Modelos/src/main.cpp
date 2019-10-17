@@ -76,6 +76,9 @@ Box cubo;
 Cylinder tubo(20, 20, 0.5, 0.5);
 
 
+Model modelChimenea;
+Model modelSofaHolly;
+
 
 //Models complex instances 
 Model modelRock;
@@ -83,6 +86,9 @@ Model modelRailRoad;
 Model modelAircraft_obj;
 Model modelDinosaurio;
 Model modelDoor1;
+Model modelEscalera;
+Model modelTv;
+
 
 GLuint textureID1, textureID2, textureID3, textureID4, IDtextuPiso1, IDtextureMarmol;
 GLuint IDtextuFachada, IDtextuMadera1;
@@ -272,6 +278,19 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	modelDoor1.loadModel("../models/Doors/InteriorDoor.obj");
 	modelDoor1.setShader(&shaderMulLighting);
+
+	modelChimenea.loadModel("../models/Chimenea/kamin_06_obj.obj");
+	modelChimenea.setShader(&shaderMulLighting);
+
+	modelSofaHolly.loadModel("../models/Sofa/Sofa HollyWood OBJ.obj");
+	modelSofaHolly.setShader(&shaderMulLighting);
+	
+	modelEscalera.loadModel("../models/Escalera/Stairs.obj");
+	modelEscalera.setShader(&shaderMulLighting);
+
+	modelTv.loadModel("../models/TV/Smart TV.obj");
+	modelTv.setShader(&shaderMulLighting);
+
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 17.0));
 
@@ -724,82 +743,153 @@ void applicationLoop() {
 
 			glm::mat4 modelCasa = glm::mat4(1.0f);
 
-			/*glm::mat4 Zotano = glm::translate(modelCasa, glm::vec3(0.0, -1.5, 0.0));
-			cubo.render(glm::scale(Zotano,glm::vec3(10.0, 3.0, 10.0)));*/
+			//ZOTANO	
+			
+				glm::mat4 Zotano = glm::translate(modelCasa, glm::vec3(0.0, -3.0, 0.0));
+			
+				glm::mat4 ZotanoPiso = glm::translate(modelCasa, glm::vec3(0.0, -3.25, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+				cubo.render(glm::scale(ZotanoPiso, glm::vec3(14.0, 0.1, 14.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPiso0 = glm::translate(modelCasa, glm::vec3(-2.5, 0.0, 0.0));
-			glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
-			cubo.render(glm::scale(ObjPiso0, glm::vec3(5.0, 0.01, 10.0)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+			//PISOS
+				glm::mat4 ObjPiso0A = glm::translate(modelCasa, glm::vec3(-1.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+				cubo.render(glm::scale(ObjPiso0A, glm::vec3(3.0, 0.01, 10.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPiso1 = glm::translate(modelCasa, glm::vec3(2.5, 0.0, -2.25));
-			glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
-			cubo.render(glm::scale(ObjPiso1, glm::vec3(5.0, 0.01, 5.5)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+					glm::mat4 ObjPiso0B = glm::translate(modelCasa, glm::vec3(-4.0, 0.0, 4.0));
+					glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+					cubo.render(glm::scale(ObjPiso0B, glm::vec3(2.0, 0.01, 2.0)));
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 ObjPiso0C = glm::translate(modelCasa, glm::vec3(-4.0, 0.0, -3.5));
+					glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+					cubo.render(glm::scale(ObjPiso0C, glm::vec3(2.0, 0.01, 3.0)));
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 ObjPiso0D = glm::translate(modelCasa, glm::vec3(-4.0, 0.0, -0.5));
+					glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+					cubo.render(glm::scale(ObjPiso0D, glm::vec3(2.0, 0.01, 3.0)));
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjPiso1 = glm::translate(modelCasa, glm::vec3(2.5, 0.0, -2.25));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+				cubo.render(glm::scale(ObjPiso1, glm::vec3(5.0, 0.01, 5.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 		
-			glm::mat4 ObjPiso2 = glm::translate(modelCasa,glm::vec3(2.5, -0.125, 2.75));
-			glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
-			cubo.render(glm::scale(ObjPiso2, glm::vec3(5.0, 0.001, 4.5)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjPiso2 = glm::translate(modelCasa,glm::vec3(2.5, -0.125, 2.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(20.0, 20.0)));
+				cubo.render(glm::scale(ObjPiso2, glm::vec3(5.0, 0.001, 4.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjEscA1 = glm::translate(modelCasa, glm::vec3(0.0, -0.0625, 2.5));
-			glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(4.0, 1.0)));
-			cubo.render(glm::scale(ObjEscA1, glm::vec3(0.0, 0.125, 5.0)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjEscA1 = glm::translate(modelCasa, glm::vec3(0.0, -0.0625, 2.5));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(4.0, 1.0)));
+				cubo.render(glm::scale(ObjEscA1, glm::vec3(0.0, 0.125, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 		
-			glm::mat4 ObjEscB1 = glm::translate(modelCasa, glm::vec3(2.5, -0.0625, 0.5));
-			glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(4.0, 1.0)));
-			cubo.render(glm::scale(ObjEscB1, glm::vec3(5.0, 0.125, 0.0)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjEscB1 = glm::translate(modelCasa, glm::vec3(2.5, -0.0625, 0.5));
+				glBindTexture(GL_TEXTURE_2D, IDtextuPiso1);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(4.0, 1.0)));
+				cubo.render(glm::scale(ObjEscB1, glm::vec3(5.0, 0.125, 0.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPared1 = glm::translate(modelCasa, glm::vec3(-4.9, 1.375, 0.0));
-			glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
-			cubo.render(glm::scale(ObjPared1, glm::vec3(0.2, 3.25, 10.0)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+			//PAREDES PIso 1
+				glm::mat4 ObjPared1 = glm::translate(modelCasa, glm::vec3(-4.9, 1.375, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared1, glm::vec3(0.2, 3.25, 10.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPared2 = glm::translate(modelCasa, glm::vec3(0.0, 1.375, -4.9));
-			glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
-			cubo.render(glm::scale(ObjPared2, glm::vec3(10.0, 3.25, 0.2)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjPared2 = glm::translate(modelCasa, glm::vec3(0.0, 1.375, -4.9));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared2, glm::vec3(10.0, 3.25, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPared3 = glm::translate(modelCasa, glm::vec3(4.9, 1.375, -2.25));
-			glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
-			cubo.render(glm::scale(ObjPared3, glm::vec3(0.2, 3.25, 5.5)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjPared3 = glm::translate(modelCasa, glm::vec3(4.9, 1.375, -2.25));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared3, glm::vec3(0.2, 3.25, 5.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPared3B = glm::translate(modelCasa, glm::vec3(4.9, 1.375, 2.75));
-			glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
-			cubo.render(glm::scale(ObjPared3B, glm::vec3(0.2, 3.25, 4.5)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjPared3B = glm::translate(modelCasa, glm::vec3(4.9, 1.375, 2.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared3B, glm::vec3(0.2, 3.25, 4.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
-			glm::mat4 ObjPared4 = glm::translate(modelCasa, glm::vec3(0.0, 1.375, 4.9));
-			glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
-			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
-			cubo.render(glm::scale(ObjPared4, glm::vec3(10.0, 3.25, 0.2)));
-			glBindTexture(GL_TEXTURE_2D, 0);
+				glm::mat4 ObjPared4A = glm::translate(modelCasa, glm::vec3(2.5, 1.375, 4.9));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared4A, glm::vec3(5.0, 3.25, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjPared4B = glm::translate(modelCasa, glm::vec3(-1.0, 1.5, 4.9));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared4B, glm::vec3(2.0, 3.0, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjPared4C = glm::translate(modelCasa, glm::vec3(-4.0, 1.5, 4.9));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(10.0, 7.0)));
+				cubo.render(glm::scale(ObjPared4C, glm::vec3(2.0, 3.0, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjPared4D = glm::translate(modelCasa, glm::vec3(-2.5, 2.43, 4.9));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 3.0)));
+				cubo.render(glm::scale(ObjPared4D, glm::vec3(1.0, 1.15, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjParedBano1 = glm::translate(modelCasa, glm::vec3(-3.0, 1.5, -4.1));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 3.0)));
+				cubo.render(glm::scale(ObjParedBano1, glm::vec3(0.2, 3.0, 1.8)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjParedBano2 = glm::translate(modelCasa, glm::vec3(-3.95, 1.5, -2.1));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 3.0)));
+				cubo.render(glm::scale(ObjParedBano2, glm::vec3(2.1, 3.0, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjParedBano3 = glm::translate(modelCasa, glm::vec3(-3.0, 2.43, -2.7));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 3.0)));
+				cubo.render(glm::scale(ObjParedBano3, glm::vec3(0.2, 1.15, 1.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 ObjParedEscaA = glm::translate(modelCasa, glm::vec3(-3.1, 1.5, 0.25));
+				glBindTexture(GL_TEXTURE_2D, IDtextuFachada);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 3.0)));
+				cubo.render(glm::scale(ObjParedEscaA, glm::vec3(0.2, 3.0, 1.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+
 
 		// COUMNA CENTRAL
-			glm::mat4 ObjColumCen = glm::translate(modelCasa, glm::vec3(0.0, 0.0, 0.5));
+			glm::mat4 ObjColumCen = glm::translate(modelCasa, glm::vec3(0.0, -0.125, 0.5));
 			glBindTexture(GL_TEXTURE_2D, IDtextureMarmol);
 			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
-			cubo.render(glm::scale(ObjColumCen, glm::vec3(0.5, 6.0, 0.5)));
+			cubo.render(glm::scale(ObjColumCen, glm::vec3(0.5, 6.25, 0.5)));
 			glBindTexture(GL_TEXTURE_2D, 0); 
 
 		//TECHO 
-			glm::mat4 ObjTecho = glm::translate(modelCasa, glm::vec3(0-0, 3.0, 0.0));
+			/*glm::mat4 ObjTecho = glm::translate(modelCasa, glm::vec3(0-0, 3.0, 0.0));
 			glBindTexture(GL_TEXTURE_2D, IDtextureMarmol);
 			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(2.0, 2.0)));
 			cubo.render(glm::scale(ObjTecho, glm::vec3(10.0, 0.05, 10.0)));
-			glBindTexture(GL_TEXTURE_2D, 0); 
+			glBindTexture(GL_TEXTURE_2D, 0); */
 
 
 		//PARTE EXTERIOR DE LA CASA
@@ -849,8 +939,20 @@ void applicationLoop() {
 
 				//2 PISO
 
-			glm::mat4 Obj2PisoSuelo = glm::translate(modelCasa, glm::vec3(0.0, 3.125, 0.0));
-			cubo.render(glm::scale(Obj2PisoSuelo, glm::vec3(14.0, 0.25, 14.0)));
+			glm::mat4 Obj2PisoSueloA = glm::translate(modelCasa, glm::vec3(3.5, 3.125, 0.0));
+			cubo.render(glm::scale(Obj2PisoSueloA, glm::vec3(7.0, 0.25, 13.95)));
+
+			glm::mat4 Obj2PisoSueloB = glm::translate(modelCasa, glm::vec3(-1.7, 3.125, 0.0));
+			cubo.render(glm::scale(Obj2PisoSueloB, glm::vec3(3.4, 0.25, 13.95)));
+
+			glm::mat4 Obj2PisoSueloC = glm::translate(modelCasa, glm::vec3(-5.2, 3.125, 4.25));
+			cubo.render(glm::scale(Obj2PisoSueloC, glm::vec3(3.59, 0.25, 4.95)));
+
+			glm::mat4 Obj2PisoSueloD = glm::translate(modelCasa, glm::vec3(-5.0, 3.125, -4.5));
+			cubo.render(glm::scale(Obj2PisoSueloD, glm::vec3(3.95, 0.25, 5.0)));
+
+			glm::mat4 Obj2PisoSueloE = glm::translate(modelCasa, glm::vec3(-5.9, 3.125, 0.0));
+			cubo.render(glm::scale(Obj2PisoSueloE, glm::vec3(2.19, 0.25, 4.0)));
 
 			glm::mat4 SegundoPiso = glm::translate(modelCasa, glm::vec3(0.0, 3.0, 0.0));
 
@@ -954,30 +1056,71 @@ void applicationLoop() {
 
 		// ACCESORIOS
 
-			/*glm::mat4 matDino = glm::mat4(1.0);
-			matDino = glm::translate(matDino, glm::vec3(0.0, 0.0, 0.0));
+			glm::mat4 matDino = glm::mat4(1.0);
+			matDino = glm::rotate(matDino, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+			matDino = glm::translate(matDino, glm::vec3(-2.6, 0.0, -2.4));
+			matDino = glm::scale(matDino, glm::vec3(1.5, 1.0, 1.0));
 			shaderMulLighting.setFloat("offsetX", 0);
 			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1,1)));
 			modelDinosaurio.render(matDino);
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
-			glActiveTexture(GL_TEXTURE0);*/
+			glActiveTexture(GL_TEXTURE0);
 
 			glm::mat4 ObjDoor1 = glm::mat4(1.0);
-			ObjDoor1 = glm::translate(ObjDoor1, glm::vec3(-2.5, 0.0, 5.0));
-			ObjDoor1 = glm::scale(ObjDoor1, glm::vec3(0.02, 0.02, 0.02));
+			ObjDoor1 = glm::translate(ObjDoor1, glm::vec3(-2.5, 0.0, 4.9));
+			ObjDoor1 = glm::scale(ObjDoor1, glm::vec3(0.02, 0.02, 0.04));
 			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1, 1)));
 			modelDoor1.render(ObjDoor1);
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 
+			//Baño planta baja
+			glm::mat4 ObjDoor2 = glm::mat4(1.0);
+			ObjDoor2 = glm::rotate(ObjDoor2, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+			ObjDoor2 = glm::translate(ObjDoor2, glm::vec3(2.7, 0.0, -3.0));
+			ObjDoor2 = glm::scale(ObjDoor2, glm::vec3(0.02, 0.02, 0.04));
+			shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1, 1)));
+			modelDoor1.render(ObjDoor2);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
+			glm::mat4 matModelChimenea = glm::mat4(1.0);
+			matModelChimenea = glm::translate(modelCasa, glm::vec3(0, 0, 0)); //2.5, 4.8, -0.25
+			matModelChimenea = glm::scale(matModelChimenea, glm::vec3(1.0, 1.0, 1.0));
+			modelChimenea.render(matModelChimenea);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
+			glm::mat4 matSofaH = glm::mat4(1.0);
+			matSofaH = glm::rotate(matSofaH, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+			matSofaH = glm::translate(matSofaH, glm::vec3(0.9, -3.5, -0.125)); //2.5, 4.8, -0.25
+			matSofaH = glm::scale(matSofaH, glm::vec3(0.0009, 0.0009, 0.0009));
+			modelSofaHolly.render(matSofaH);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
+			glm::mat4 matEscalera = glm::mat4(1.0);
+			matEscalera = glm::rotate(matEscalera, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+			matEscalera = glm::translate(matEscalera, glm::vec3(-0.0, 0.0, -3.0));
+			matEscalera = glm::scale(matEscalera, glm::vec3(0.6, 0.6, 0.6));
+			modelEscalera.render(matEscalera);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
+			glm::mat4 matEscaleraZotano = glm::mat4(1.0);
+			matEscaleraZotano = glm::rotate(matEscaleraZotano, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+			matEscaleraZotano = glm::translate(matEscaleraZotano, glm::vec3(-1.25, -3.25, -3.0));
+			matEscaleraZotano = glm::scale(matEscaleraZotano, glm::vec3(0.6, 0.6, 0.6));
+			modelEscalera.render(matEscaleraZotano);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
-
-
-
+			glm::mat4 matTv1 = glm::mat4(1.0);
+			matTv1 = glm::translate(modelCasa, glm::vec3(0.0, 0.0, 0.0));
+			matTv1 = glm::scale(matTv1, glm::vec3(20.0, 20.0, 20.0));
+			modelTv.render(matTv1);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
 
 
