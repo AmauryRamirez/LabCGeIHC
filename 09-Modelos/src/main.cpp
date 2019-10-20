@@ -542,7 +542,10 @@ void destroy() {
 	cylinder1.destroy();
 	box1.destroy();
 	cubo.destroy();
+	tubo.destroy();
 
+
+	
 	shader.destroy();
 }
 
