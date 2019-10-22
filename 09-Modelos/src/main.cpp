@@ -91,10 +91,11 @@ Model modelEscalera;
 Model modelCocina;
 Model modelVentana;
 Model modelRefri;
+Model modelCerca;
 
 
 GLuint textureID1, textureID2, textureID3, textureID4, IDtextuPiso1, IDtextureMarmol;
-GLuint IDtextuFachada, IDtextuMadera1, IDTextureTv, IDTextureCesped;
+GLuint IDtextuFachada, IDtextuMadera1, IDTextureTv, IDTextureCesped, IDtextureMetal, IDtextureCristal;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -302,6 +303,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelVentana.setShader(&shaderMulLighting);
 
 	modelRefri.loadModel("../models/Double_Door_Fridge/Fridge.obj");
+	modelRefri.setShader(&shaderMulLighting);
+
+	modelRefri.loadModel("../models/cerca/Fence_White.obj");
 	modelRefri.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 17.0));
@@ -557,7 +561,45 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textuCesped.freeImage(bitmap);
 	//--------------------------
 
+	//----------------------------TEXTURA Crystal--------------------------------------------------------------
+	Texture textuCristal("../Textures/cristal.jpg");
+	bitmap = textuCristal.loadImage(false);
+	data = textuCristal.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextureCristal);
+	glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuCristal.freeImage(bitmap);
+	//--------------------------
 
+	//----------------------------TEXTURA METAL--------------------------------------------------------------
+	Texture textuMetal("../Textures/metal.jpg");
+	bitmap = textuMetal.loadImage(false);
+	data = textuMetal.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextureMetal);
+	glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuMetal.freeImage(bitmap);
+	//--------------------------
 
 
 	// Carga de texturas para el skybox
@@ -1131,36 +1173,66 @@ void applicationLoop() {
 
 				glm::mat4 VentanaTerraza = glm::translate(Obj2TerraSuelo3, glm::vec3(0.0, 0.0, -6.0));
 				cuboAzul.render(glm::scale(VentanaTerraza, glm::vec3(3.8, 0.08, 7.0)));
-				
+	
 				glm::mat4 ObjTerraTubo1 = glm::translate(ObjTerraSuelo, glm::vec3(-3.25, 0.5, -6.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				tubo.render(glm::scale(ObjTerraTubo1, glm::vec3(0.25, 1.0, 0.25)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraTubo2 = glm::translate(ObjTerraSuelo, glm::vec3(3.25, 0.5, -6.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				tubo.render(glm::scale(ObjTerraTubo2, glm::vec3(0.25, 1.0, 0.25)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraTubo3 = glm::translate(ObjTerraSuelo, glm::vec3(-3.25, 0.5, 6.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				tubo.render(glm::scale(ObjTerraTubo3, glm::vec3(0.25, 1.0, 0.25)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraTubo4 = glm::translate(ObjTerraSuelo, glm::vec3(3.25, 0.5, 6.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				tubo.render(glm::scale(ObjTerraTubo4, glm::vec3(0.25, 1.0, 0.25)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraTubo5 = glm::translate(ObjTerraSuelo, glm::vec3(3.25, 0.5, -4.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureMetal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				tubo.render(glm::scale(ObjTerraTubo5, glm::vec3(0.25, 1.0, 0.25)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraCriz1 = glm::translate(ObjTerraTubo1, glm::vec3(3.25, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				cubo.render(glm::scale(ObjTerraCriz1, glm::vec3(6.5, 0.7, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraCriz2 = glm::translate(ObjTerraTubo1, glm::vec3(0.0, 0.0, 6.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				cubo.render(glm::scale(ObjTerraCriz2, glm::vec3(0.2, 0.7, 13.5)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraCriz3 = glm::translate(ObjTerraTubo3, glm::vec3(3.25, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				cubo.render(glm::scale(ObjTerraCriz3, glm::vec3(6.5, 0.7, 0.2)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraCriz4 = glm::translate(ObjTerraTubo2, glm::vec3(0.0, 0.0, 1.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				cubo.render(glm::scale(ObjTerraCriz4, glm::vec3(0.2, 0.7, 2.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 				glm::mat4 ObjTerraCriz5 = glm::translate(ObjTerraTubo5, glm::vec3(0.0, 0.0, 5.75));
+				glBindTexture(GL_TEXTURE_2D, IDtextureCristal);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 				cubo.render(glm::scale(ObjTerraCriz5, glm::vec3(0.2, 0.7, 12.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
 
 
 		// ACCESORIOS
@@ -1295,6 +1367,12 @@ void applicationLoop() {
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 
+			glm::mat4 matCerca = glm::mat4(1.0);
+			matCerca = glm::translate(modelCasa, glm::vec3(0.0, 0.0, 0.0));
+			//matCerca = glm::scale(matCerca, glm::vec3(0.0, 10.0, 10.0));
+			modelCerca.render(matCerca);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
 
 
 		
@@ -1410,12 +1488,12 @@ void applicationLoop() {
 
 		//MODEL COMPLEX RENDER
 		/*glm::mat4 matModelRock = glm::mat4(1.0);
-		matModelRock = glm::translate(matModelRock, glm::vec3(-3.0, 0.0, 4.0));
+		matModelRock = glm::translate(matModelRock, glm::vec3(-3.0, -1.0, 4.0));
 		shaderMulLighting.setFloat("offsetX", 0);
 		modelRock.render(matModelRock);
 		//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
-		glActiveTexture(GL_TEXTURE0);
-
+		glActiveTexture(GL_TEXTURE0);*/
+		/*
 		//MODEL VIAS DEL TREN
 		glm::mat4 matrailroad = glm::mat4(1.0);
 		matrailroad = glm::translate(matrailroad, glm::vec3(3.0, 0.0, 4.0));
