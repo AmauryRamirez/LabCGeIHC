@@ -92,10 +92,13 @@ Model modelCocina;
 Model modelVentana;
 Model modelRefri;
 Model modelCerca;
+Model modelCarroEclip1;
+Model modelHelico;
 
 
 GLuint textureID1, textureID2, textureID3, textureID4, IDtextuPiso1, IDtextureMarmol;
 GLuint IDtextuFachada, IDtextuMadera1, IDTextureTv, IDTextureCesped, IDtextureMetal, IDtextureCristal;
+GLuint IDtextuCarretera, IDtextureAsfalto;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -106,12 +109,12 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_rainforest/rainforest_ft.tga",
-		"../Textures/mp_rainforest/rainforest_bk.tga",
-		"../Textures/mp_rainforest/rainforest_up.tga",
-		"../Textures/mp_rainforest/rainforest_dn.tga",
-		"../Textures/mp_rainforest/rainforest_rt.tga",
-		"../Textures/mp_rainforest/rainforest_lf.tga" };
+std::string fileNames[6] = { "../Textures/mp_druidcove/druidcove_ft.tga",
+		"../Textures/mp_druidcove/druidcove_bk.tga",
+		"../Textures/mp_druidcove/druidcove_up.tga",
+		"../Textures/mp_druidcove/druidcove_dn.tga",
+		"../Textures/mp_druidcove/druidcove_rt.tga",
+		"../Textures/mp_druidcove/druidcove_lf.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
@@ -308,6 +311,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelRefri.loadModel("../models/cerca/Fence_White.obj");
 	modelRefri.setShader(&shaderMulLighting);
 
+	modelCarroEclip1.loadModel("../models/Eclipse/2003eclipse.obj");
+	modelCarroEclip1.setShader(&shaderMulLighting);
+
+	modelHelico.loadModel("../models/Helicopter/Mi_24.obj");
+	modelHelico.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 3.0, 17.0));
 
 	// Descomentar
@@ -460,6 +469,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textuPiso1.freeImage(bitmap);
 	//--------------------------
 
+	//----------------------------TEXTURA ASFALTO--------------------------------------------------------------
+	Texture textuAsfalto("../Textures/asfalto.jpg");
+	bitmap = textuAsfalto.loadImage(false);
+	data = textuAsfalto.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextureAsfalto);
+	glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuAsfalto.freeImage(bitmap);
+	//--------------------------
+
+
 	//----------------------------TEXTURA ColumCentral--------------------------------------------------------------
 	Texture textuMarmol("../Textures/marmol.jpg");
 	bitmap = textuMarmol.loadImage(false);
@@ -479,6 +509,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	textuMarmol.freeImage(bitmap);
 	//--------------------------
+
+	//----------------------------TEXTURA CARRETERA--------------------------------------------------------------
+	Texture textuCarretera("../Textures/Carretera.jpg");
+	bitmap = textuCarretera.loadImage(TRUE);
+	data = textuCarretera.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuCarretera);
+	glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuCarretera.freeImage(bitmap);
+	//--------------------------
+
 
 	//----------------------------TEXTURA fachada--------------------------------------------------------------
 	Texture textuFachada("../Textures/fachada.jpg");
@@ -720,7 +771,27 @@ void applicationLoop() {
 	//glm::mat4 model = glm::mat4(1.0f);
 	float offX = 0.0;
 	float angle = 0.0;
-	float ratio = 5.0;
+	float ratio = 50.0;
+
+	float offsetCarAdvance = 0.0;
+	float offsetCarRot = 0.0;
+	int stateCar = 0;
+	
+	float offsetHeliAdvance = 0.0;
+	float offsetHeliDown = 0.0;
+	float offsetHeliRot = 0.0;
+	int stateHeli = 0;
+	
+	glm::mat4 ObjCarroEclipse = glm::mat4(1.0);
+	ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, -0.8, 21.0));
+	ObjCarroEclipse = glm::scale(ObjCarroEclipse, glm::vec3(0.2, 0.2, 0.2));
+	ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	
+	glm::mat4 matHelico = glm::mat4(1.0);
+	matHelico = glm::translate(matHelico, glm::vec3(0.0, 20.0, -100.0));
+	matHelico = glm::rotate(matHelico, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+	
+
 	while (psi) {
 		psi = processInput(true);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -810,7 +881,27 @@ void applicationLoop() {
 		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
 		shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
 		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.05);
+		
+		/*
+		// Esto es para la luces pointlights
+		//numero de luces a utilizar de tipo pointlihts = 3
+		shaderMulLighting.setInt("pointLightCount", 5); //agregar numero de luces sise ponen 5 tambien ir a multipleShader.fs en const int MAX_POINT_LIGHTS = 5;
 
+		// posicion de la luz con indice 0
+		shaderMulLighting.setVectorFloat3("pointLights[0].position", glm::value_ptr((glm::vec3(0.0, 0.0, 0.0)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		//propiedades de la luz 0
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.specular", glm::value_ptr(glm::vec3(0.0, 0.6, 0.0)));
+		shaderMulLighting.setFloat("pointLights[0].constant", 1.0);
+		shaderMulLighting.setFloat("pointLights[0].linear", 0.04);
+		shaderMulLighting.setFloat("pointLights[0].quadratic", 0.004);
+
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.2));
+		sphereLamp.setPosition(glm::vec3(0.0, 0.0, 0.0));
+		sphereLamp.setColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
+		sphereLamp.render();*/
 
 
 		glm::mat4 lightModelmatrix = glm::rotate(glm::mat4(1.0f), angle,
@@ -837,7 +928,7 @@ void applicationLoop() {
 						glm::vec4(
 								lightModelmatrix
 									* glm::vec4(0.0, 0.0, 0.0, 1.0))));
-		//sphereLamp.render(lightModelmatrix);-----------------------------------------------------DESCOMENTAR LAMPARA SOL
+		sphereLamp.render(lightModelmatrix);//-----------------------------------------------------DESCOMENTAR LAMPARA SOL
 
 		
 		// PISO INTERIOR
@@ -1235,6 +1326,110 @@ void applicationLoop() {
 				glBindTexture(GL_TEXTURE_2D, 0);
 
 
+				//CARRETERA
+				
+				glm::mat4 matCarretera = glm::mat4(1.0);
+				matCarretera = glm::translate(matCarretera, glm::vec3(0.0, -0.8, 20.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera0 = glm::mat4(1.0);
+				matCarretera0 = glm::translate(matCarretera, glm::vec3(-20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera0, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+				
+				glm::mat4 matCarreteraCruce0 = glm::mat4(1.0);
+				matCarreteraCruce0 = glm::translate(matCarretera0, glm::vec3(-12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce0, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+
+				glm::mat4 matCarretera2 = glm::mat4(1.0);
+				matCarretera2 = glm::translate(matCarretera, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera2, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce = glm::mat4(1.0);
+				matCarreteraCruce = glm::translate(matCarretera2, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera3 = glm::mat4(1.0);
+				matCarretera3 = glm::rotate(matCarreteraCruce, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera3 = glm::translate(matCarretera3, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera3, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera4 = glm::mat4(1.0);
+				matCarretera4 = glm::translate(matCarretera3, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera4, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce2 = glm::mat4(1.0);
+				matCarreteraCruce2 = glm::translate(matCarretera4, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce2, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera5 = glm::mat4(1.0);
+				matCarretera5 = glm::rotate(matCarreteraCruce2, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera5 = glm::translate(matCarretera5, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera5, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera6 = glm::mat4(1.0);
+				matCarretera6 = glm::translate(matCarretera5, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera6, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+				
+				glm::mat4 matCarretera7 = glm::mat4(1.0);
+				matCarretera7 = glm::translate(matCarretera6, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera7, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce3 = glm::mat4(1.0);
+				matCarreteraCruce3 = glm::translate(matCarretera7, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce3, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera8 = glm::mat4(1.0);
+				matCarretera8 = glm::rotate(matCarreteraCruce3, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera8 = glm::translate(matCarretera8, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera8, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera9 = glm::mat4(1.0);
+				matCarretera9 = glm::translate(matCarretera8, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera9, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
 		// ACCESORIOS
 
 			glm::mat4 ObjRefri = glm::mat4(1.0);
@@ -1245,6 +1440,14 @@ void applicationLoop() {
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 				
+			modelCarroEclip1.render(ObjCarroEclipse);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
+
+			modelHelico.render(matHelico);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
+
 			glm::mat4 matDino = glm::mat4(1.0);
 			matDino = glm::rotate(matDino, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
 			matDino = glm::translate(matDino, glm::vec3(-2.6, 0.0, -2.6));
@@ -1358,7 +1561,6 @@ void applicationLoop() {
 			glActiveTexture(GL_TEXTURE0);
 
 			glm::mat4 matVentana = glm::mat4(1.0);
-			//matDino = glm::rotate(matDino, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
 			matVentana = glm::translate(matVentana, glm::vec3(-4.3, 4.0, 6.9));
 			matVentana = glm::scale(matVentana, glm::vec3(0.065, 0.065, 0.065));
 			shaderMulLighting.setFloat("offsetX", 0);
@@ -1367,12 +1569,6 @@ void applicationLoop() {
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 
-			glm::mat4 matCerca = glm::mat4(1.0);
-			matCerca = glm::translate(modelCasa, glm::vec3(0.0, 0.0, 0.0));
-			//matCerca = glm::scale(matCerca, glm::vec3(0.0, 10.0, 10.0));
-			modelCerca.render(matCerca);
-			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
-			glActiveTexture(GL_TEXTURE0);
 
 
 		
@@ -1532,6 +1728,88 @@ void applicationLoop() {
 		dz = 0;
 		rot0 = 0;
 		offX += 0.001;
+
+		switch (stateCar) {
+		case 0:
+			std::cout << "Advance" << std::endl;
+			//0.005 debe ser igual 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 150.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 1;
+			}
+			break;
+
+		case 1:
+			std::cout << "Turn" << std::endl;
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0, 0, 0.16));
+			ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+			offsetCarRot += 0.5; //igual a los grados
+			if (offsetCarRot > 90.0) {
+				offsetCarRot = 0.0;
+				stateCar = 2;
+			}
+			break;
+
+		case 2:
+			std::cout << "Advance" << std::endl; 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 200.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 3;
+			}
+			break;
+
+		case 3:
+			std::cout << "Turn" << std::endl;
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0, 0, 0.16));
+			ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+			offsetCarRot += 0.5; //igual a los grados
+			if (offsetCarRot > 89.0) {
+				offsetCarRot = 0.0;
+				stateCar = 4;
+			}
+			break;
+
+		case 4:
+			std::cout << "Advance" << std::endl;
+			//0.005 debe ser igual 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 150.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 0;
+			}
+			break;
+		}
+
+		switch (stateHeli) {
+		case 0: 
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, 0.15, 0.15));
+			offsetHeliAdvance += 0.15;
+			if (offsetHeliAdvance > 50.0) {
+				offsetHeliAdvance = 0.0;
+				stateHeli = 1;
+			}
+			break;
+
+		case 1:
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, -0.15, 0.5));
+			matHelico = glm::rotate(matHelico, glm::radians(-0.5f), glm::vec3(1.0, 0.0, 0.0));
+			offsetHeliRot += 0.5; //igual a los grados
+			if (offsetHeliRot > 40.0) {
+				offsetHeliRot = 0.0;
+				stateHeli = 0;
+			}
+			break;
+		
+		case 2:	
+
+			break;
+
+		}
 
 		glfwSwapBuffers(window);
 	}
