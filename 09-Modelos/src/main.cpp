@@ -1,5 +1,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <stdlib.h>
+#include <time.h>
+
+
 //glew include
 #include <GL/glew.h>
 
@@ -92,10 +96,13 @@ Model modelCocina;
 Model modelVentana;
 Model modelRefri;
 Model modelCerca;
+Model modelCarroEclip1;
+Model modelHelico;
 
 
 GLuint textureID1, textureID2, textureID3, textureID4, IDtextuPiso1, IDtextureMarmol;
 GLuint IDtextuFachada, IDtextuMadera1, IDTextureTv, IDTextureCesped, IDtextureMetal, IDtextureCristal;
+GLuint IDtextuCarretera, IDtextureAsfalto;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -106,12 +113,12 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_rainforest/rainforest_ft.tga",
-		"../Textures/mp_rainforest/rainforest_bk.tga",
-		"../Textures/mp_rainforest/rainforest_up.tga",
-		"../Textures/mp_rainforest/rainforest_dn.tga",
-		"../Textures/mp_rainforest/rainforest_rt.tga",
-		"../Textures/mp_rainforest/rainforest_lf.tga" };
+std::string fileNames[6] = { "../Textures/mp_druidcove/druidcove_ft.tga",
+		"../Textures/mp_druidcove/druidcove_bk.tga",
+		"../Textures/mp_druidcove/druidcove_up.tga",
+		"../Textures/mp_druidcove/druidcove_dn.tga",
+		"../Textures/mp_druidcove/druidcove_rt.tga",
+		"../Textures/mp_druidcove/druidcove_lf.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
@@ -308,6 +315,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelRefri.loadModel("../models/cerca/Fence_White.obj");
 	modelRefri.setShader(&shaderMulLighting);
 
+	modelCarroEclip1.loadModel("../models/Eclipse/2003eclipse.obj");
+	modelCarroEclip1.setShader(&shaderMulLighting);
+
+	modelHelico.loadModel("../models/Helicopter/Mi_24.obj");
+	modelHelico.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 3.0, 17.0));
 
 	// Descomentar
@@ -460,6 +473,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textuPiso1.freeImage(bitmap);
 	//--------------------------
 
+	//----------------------------TEXTURA ASFALTO--------------------------------------------------------------
+	Texture textuAsfalto("../Textures/asfalto.jpg");
+	bitmap = textuAsfalto.loadImage(false);
+	data = textuAsfalto.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextureAsfalto);
+	glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuAsfalto.freeImage(bitmap);
+	//--------------------------
+
+
 	//----------------------------TEXTURA ColumCentral--------------------------------------------------------------
 	Texture textuMarmol("../Textures/marmol.jpg");
 	bitmap = textuMarmol.loadImage(false);
@@ -479,6 +513,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	textuMarmol.freeImage(bitmap);
 	//--------------------------
+
+	//----------------------------TEXTURA CARRETERA--------------------------------------------------------------
+	Texture textuCarretera("../Textures/Carretera.jpg");
+	bitmap = textuCarretera.loadImage(TRUE);
+	data = textuCarretera.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuCarretera);
+	glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuCarretera.freeImage(bitmap);
+	//--------------------------
+
 
 	//----------------------------TEXTURA fachada--------------------------------------------------------------
 	Texture textuFachada("../Textures/fachada.jpg");
@@ -720,8 +775,46 @@ void applicationLoop() {
 	//glm::mat4 model = glm::mat4(1.0f);
 	float offX = 0.0;
 	float angle = 0.0;
-	float ratio = 5.0;
+	float ratio = 50.0;
+
+	int aleatorio = 0, aleatorio2 = 0;
+
+	
+
+	float offsetCarAdvance = 0.0;
+	float offsetCarRot = 0.0;
+	int stateCar = 0;
+	
+	float offsetHeliAdvance = 0.0;
+	float offsetHeliDown = 0.0;
+	float offsetHeliRot = 0.0;
+	int stateHeli = 0;
+	
+	glm::mat4 ObjCarroEclipse = glm::mat4(1.0);
+	ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, -0.8, 21.0));
+	ObjCarroEclipse = glm::scale(ObjCarroEclipse, glm::vec3(0.2, 0.2, 0.2));
+	ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	
+	glm::mat4 matHelico = glm::mat4(1.0);
+	matHelico = glm::translate(matHelico, glm::vec3(-3.5, 20.0, -100.0));
+	matHelico = glm::rotate(matHelico, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+	
+
 	while (psi) {
+
+		srand(time(NULL));
+		aleatorio = rand() % 10;
+
+		if (aleatorio <= 5) {
+			aleatorio = 5;
+			aleatorio2 = 10;
+		}
+		else
+		{
+			aleatorio = 10;
+			aleatorio2 = 5;
+		}
+
 		psi = processInput(true);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -810,6 +903,282 @@ void applicationLoop() {
 		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
 		shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
 		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.05);
+		
+		
+		// Esto es para la luces pointlights
+		//numero de luces a utilizar de tipo pointlihts = 3
+		shaderMulLighting.setInt("pointLightCount", 20); //agregar numero de luces sise ponen 5 tambien ir a multipleShader.fs en const int MAX_POINT_LIGHTS = 5;
+
+		// posicion de la luz con indice 0
+		shaderMulLighting.setVectorFloat3("pointLights[0].position", glm::value_ptr((glm::vec3(-6.6, 4.0, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.specular", glm::value_ptr(glm::vec3(0.0, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[0].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[0].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[0].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[1].position", glm::value_ptr((glm::vec3(-6.5, 3.8, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.diffuse", glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.0)));
+		shaderMulLighting.setFloat("pointLights[1].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[1].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[1].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[2].position", glm::value_ptr((glm::vec3(-6.4, 3.6, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.diffuse", glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.specular", glm::value_ptr(glm::vec3(0.0, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[2].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[2].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[2].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[3].position", glm::value_ptr((glm::vec3(-6.3, 3.4, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.diffuse", glm::value_ptr(glm::vec3(1.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[3].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[3].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[3].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[4].position", glm::value_ptr((glm::vec3(-6.2, 3.2, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.specular", glm::value_ptr(glm::vec3(0.6, 0.6, 0.6)));
+		shaderMulLighting.setFloat("pointLights[4].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[4].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[4].quadratic", 0.00004);
+
+
+
+		shaderMulLighting.setVectorFloat3("pointLights[5].position", glm::value_ptr((glm::vec3(-6.1, 3.0, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.diffuse", glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.specular", glm::value_ptr(glm::vec3(0.0, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[5].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[5].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[5].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[6].position", glm::value_ptr((glm::vec3(-6.0, 3.2, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.diffuse", glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.0)));
+		shaderMulLighting.setFloat("pointLights[6].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[6].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[6].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[7].position", glm::value_ptr((glm::vec3(-5.9, 3.4, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.diffuse", glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.specular", glm::value_ptr(glm::vec3(0.0, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[7].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[7].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[7].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[8].position", glm::value_ptr((glm::vec3(-5.8, 3.6, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.diffuse", glm::value_ptr(glm::vec3(1.0, 0.0, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[8].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[8].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[8].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[9].position", glm::value_ptr((glm::vec3(-5.7, 3.8, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[9].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[9].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[9].quadratic", 0.00004);
+
+
+
+
+		shaderMulLighting.setVectorFloat3("pointLights[10].position", glm::value_ptr((glm::vec3(-5.6, 4.0, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[10].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[10].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[10].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[11].position", glm::value_ptr((glm::vec3(-5.5, 3.8, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[11].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[11].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[11].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[12].position", glm::value_ptr((glm::vec3(-5.4, 3.6, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[12].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[12].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[12].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[13].position", glm::value_ptr((glm::vec3(-5.3, 3.4, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[13].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[13].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[13].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[14].position", glm::value_ptr((glm::vec3(-5.2, 3.2, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[14].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[14].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[14].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[15].position", glm::value_ptr((glm::vec3(-5.1, 3.0, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[15].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[15].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[15].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[16].position", glm::value_ptr((glm::vec3(-5.0, 3.2, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[16].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[16].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[16].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[17].position", glm::value_ptr((glm::vec3(-4.9, 3.4, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[17].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[17].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[17].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[18].position", glm::value_ptr((glm::vec3(-4.8, 3.6, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[18].constant", aleatorio);
+		shaderMulLighting.setFloat("pointLights[18].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[18].quadratic", 0.00004);
+
+		shaderMulLighting.setVectorFloat3("pointLights[19].position", glm::value_ptr((glm::vec3(-4.7, 3.8, 7.1)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 1.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.specular", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderMulLighting.setFloat("pointLights[19].constant", aleatorio2);
+		shaderMulLighting.setFloat("pointLights[19].linear", 0.0004);
+		shaderMulLighting.setFloat("pointLights[19].quadratic", 0.00004);
+
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.6, 4.0, 7.2));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.5, 3.8, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.4, 3.6, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.3, 3.4, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.2, 3.2, 7.1));
+		sphereLamp.setColor(glm::vec4(0.5, 0.5, 1.0, 1.0));
+		sphereLamp.render();
+
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.1, 3.0, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-6.0, 3.2, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.9, 3.4, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.8, 3.6, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.7, 3.8, 7.1));
+		sphereLamp.setColor(glm::vec4(0.5, 0.5, 1.0, 1.0));
+		sphereLamp.render();
+
+
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.6, 4.0, 7.2));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(5.5, 3.8, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.4, 3.6, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.3, 3.4, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.2, 3.2, 7.1));
+		sphereLamp.setColor(glm::vec4(0.5, 0.5, 1.0, 1.0));
+		sphereLamp.render();
+
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.1, 3.0, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-5.0, 3.2, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-4.9, 3.4, 7.1));
+		sphereLamp.setColor(glm::vec4(0.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-4.8, 3.6, 7.1));
+		sphereLamp.setColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+		sphereLamp.render();
+
+		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.1));
+		sphereLamp.setPosition(glm::vec3(-4.7, 3.8, 7.1));
+		sphereLamp.setColor(glm::vec4(0.5, 0.5, 1.0, 1.0));
+		sphereLamp.render();
 
 
 
@@ -837,7 +1206,7 @@ void applicationLoop() {
 						glm::vec4(
 								lightModelmatrix
 									* glm::vec4(0.0, 0.0, 0.0, 1.0))));
-		//sphereLamp.render(lightModelmatrix);-----------------------------------------------------DESCOMENTAR LAMPARA SOL
+		sphereLamp.render(lightModelmatrix);//-----------------------------------------------------DESCOMENTAR LAMPARA SOL
 
 		
 		// PISO INTERIOR
@@ -1235,6 +1604,110 @@ void applicationLoop() {
 				glBindTexture(GL_TEXTURE_2D, 0);
 
 
+				//CARRETERA
+				
+				glm::mat4 matCarretera = glm::mat4(1.0);
+				matCarretera = glm::translate(matCarretera, glm::vec3(0.0, -0.8, 20.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera0 = glm::mat4(1.0);
+				matCarretera0 = glm::translate(matCarretera, glm::vec3(-20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera0, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+				
+				glm::mat4 matCarreteraCruce0 = glm::mat4(1.0);
+				matCarreteraCruce0 = glm::translate(matCarretera0, glm::vec3(-12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce0, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+
+				glm::mat4 matCarretera2 = glm::mat4(1.0);
+				matCarretera2 = glm::translate(matCarretera, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera2, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce = glm::mat4(1.0);
+				matCarreteraCruce = glm::translate(matCarretera2, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera3 = glm::mat4(1.0);
+				matCarretera3 = glm::rotate(matCarreteraCruce, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera3 = glm::translate(matCarretera3, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera3, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera4 = glm::mat4(1.0);
+				matCarretera4 = glm::translate(matCarretera3, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera4, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce2 = glm::mat4(1.0);
+				matCarreteraCruce2 = glm::translate(matCarretera4, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce2, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera5 = glm::mat4(1.0);
+				matCarretera5 = glm::rotate(matCarreteraCruce2, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera5 = glm::translate(matCarretera5, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera5, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera6 = glm::mat4(1.0);
+				matCarretera6 = glm::translate(matCarretera5, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera6, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+				
+				glm::mat4 matCarretera7 = glm::mat4(1.0);
+				matCarretera7 = glm::translate(matCarretera6, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera7, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarreteraCruce3 = glm::mat4(1.0);
+				matCarreteraCruce3 = glm::translate(matCarretera7, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarreteraCruce3, glm::vec3(5.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera8 = glm::mat4(1.0);
+				matCarretera8 = glm::rotate(matCarreteraCruce3, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matCarretera8 = glm::translate(matCarretera8, glm::vec3(12.5, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera8, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glm::mat4 matCarretera9 = glm::mat4(1.0);
+				matCarretera9 = glm::translate(matCarretera8, glm::vec3(20.0, 0.0, 0.0));
+				glBindTexture(GL_TEXTURE_2D, IDtextuCarretera);
+				shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
+				cubo.render(glm::scale(matCarretera9, glm::vec3(20.0, 0.01, 5.0)));
+				glBindTexture(GL_TEXTURE_2D, 0);
+
 		// ACCESORIOS
 
 			glm::mat4 ObjRefri = glm::mat4(1.0);
@@ -1245,6 +1718,14 @@ void applicationLoop() {
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 				
+			modelCarroEclip1.render(ObjCarroEclipse);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
+
+			modelHelico.render(matHelico);
+			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
+			glActiveTexture(GL_TEXTURE0);
+
 			glm::mat4 matDino = glm::mat4(1.0);
 			matDino = glm::rotate(matDino, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
 			matDino = glm::translate(matDino, glm::vec3(-2.6, 0.0, -2.6));
@@ -1358,7 +1839,6 @@ void applicationLoop() {
 			glActiveTexture(GL_TEXTURE0);
 
 			glm::mat4 matVentana = glm::mat4(1.0);
-			//matDino = glm::rotate(matDino, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
 			matVentana = glm::translate(matVentana, glm::vec3(-4.3, 4.0, 6.9));
 			matVentana = glm::scale(matVentana, glm::vec3(0.065, 0.065, 0.065));
 			shaderMulLighting.setFloat("offsetX", 0);
@@ -1367,12 +1847,6 @@ void applicationLoop() {
 			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
 			glActiveTexture(GL_TEXTURE0);
 
-			glm::mat4 matCerca = glm::mat4(1.0);
-			matCerca = glm::translate(modelCasa, glm::vec3(0.0, 0.0, 0.0));
-			//matCerca = glm::scale(matCerca, glm::vec3(0.0, 10.0, 10.0));
-			modelCerca.render(matCerca);
-			//FORCE TO ENABLE THE UNIT TEXTURE TO 0 ALWAYS .............. IMPORTANT
-			glActiveTexture(GL_TEXTURE0);
 
 
 		
@@ -1532,6 +2006,101 @@ void applicationLoop() {
 		dz = 0;
 		rot0 = 0;
 		offX += 0.001;
+
+		switch (stateCar) {
+		case 0:
+			std::cout << "Advance" << std::endl;
+			//0.005 debe ser igual 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 150.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 1;
+			}
+			break;
+
+		case 1:
+			std::cout << "Turn" << std::endl;
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0, 0, 0.16));
+			ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+			offsetCarRot += 0.5; //igual a los grados
+			if (offsetCarRot > 90.0) {
+				offsetCarRot = 0.0;
+				stateCar = 2;
+			}
+			break;
+
+		case 2:
+			std::cout << "Advance" << std::endl; 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 200.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 3;
+			}
+			break;
+
+		case 3:
+			std::cout << "Turn" << std::endl;
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0, 0, 0.16));
+			ObjCarroEclipse = glm::rotate(ObjCarroEclipse, glm::radians(0.5f), glm::vec3(0.0, 1.0, 0.0));
+			offsetCarRot += 0.5; //igual a los grados
+			if (offsetCarRot > 89.0) {
+				offsetCarRot = 0.0;
+				stateCar = 4;
+			}
+			break;
+
+		case 4:
+			std::cout << "Advance" << std::endl;
+			//0.005 debe ser igual 
+			ObjCarroEclipse = glm::translate(ObjCarroEclipse, glm::vec3(0.0, 0.0, 0.9));
+			offsetCarAdvance += 0.9;
+			if (offsetCarAdvance > 150.0) {
+				offsetCarAdvance = 0.0;
+				stateCar = 0;
+			}
+			break;
+		}
+
+		switch (stateHeli) {
+		case 0: 
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, 0.15, 0.15));
+			offsetHeliAdvance += 0.15;
+			if (offsetHeliAdvance > 56.0) {
+				offsetHeliAdvance = 0.0;
+				stateHeli = 1;
+			}
+			break;
+
+		case 1:
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, 0.15, 0.15));
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, -0.15, 0.0));
+			matHelico = glm::rotate(matHelico, glm::radians(-0.5f), glm::vec3(1.0, 0.0, 0.0));
+			offsetHeliRot += 0.5; //igual a los grados
+			if (offsetHeliRot > 45.0) {
+				offsetHeliRot = 0.0;
+				stateHeli = 2;
+			}
+			break;
+		
+		case 2:	
+			matHelico = glm::translate(matHelico, glm::vec3(0.0, -0.15, 0.15));
+			offsetHeliAdvance += 0.15;
+			if (offsetHeliAdvance > 9.0) {
+				offsetHeliAdvance = 0.0;
+				stateHeli = 3;
+			}
+			break;
+		case 3:
+			offsetHeliAdvance += 0.1;
+			if (offsetHeliAdvance > 9.0) {
+				offsetHeliAdvance = 0.0;
+				stateHeli = 0;
+			}
+
+			break;
+		}
 
 		glfwSwapBuffers(window);
 	}
