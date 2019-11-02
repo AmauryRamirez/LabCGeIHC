@@ -74,7 +74,7 @@ Box box1;
 Box box2;
 Box box3;
 Box boxCesped;
-Box boxCarretera; 
+Box boxCarretera;
 Box boxWall;
 // Models complex instances
 Model modelRock;
@@ -84,7 +84,7 @@ Model modelEclipseChasis;
 Model modelEclipseWheelsFrontal;
 Model modelEclipseWheelsRear;
 Model modelHelicopteroChasis;
-Model modelHelicopterohelisesMid; 
+Model modelHelicopterohelisesMid;
 Model modelHelicopteroHelisesTras;
 
 
@@ -257,7 +257,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	boxCarretera.init();
 	boxCarretera.setShader(&shaderMulLighting);
-	
+
 
 	boxWall.init();
 	boxWall.setShader(&shaderMulLighting);
@@ -664,7 +664,7 @@ void applicationLoop() {
 	float angle = 0.0;
 	float ratio = 30.0;
 	glm::mat4 modelMatrixEclipse = glm::mat4(1.0f);
-	modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.01, -19.0));
+	modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(-10.0, 0.01, -19.0));
 	modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
 	int state = 0;
 	float advanceCount = 0.0;
@@ -680,15 +680,15 @@ void applicationLoop() {
 	int stateHeli = 0;
 	float rotHelicopteroHelicesY = 0.0;
 	float rotHelicopteroHelicesTras = 0.0;
-	
-	
+
+
 	//SE CREA EL OBJETO DEL HELICOPTERO PARA DARLE ANIMACIÓN DE MOVIMINETO
 	glm::mat4 modelMatrixHelicopteroChasis = glm::mat4(1.0);
 	modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(-10.0, 30.0, -113.0));
 	modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
 
 	glm::mat4 modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-	
+
 	glm::mat4 modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 
@@ -889,7 +889,7 @@ void applicationLoop() {
 		/*******************************************
 		 * Bob Sponja, agua, cesped, esfera con Goku, cubo con ladrillos
 		 *******************************************/
-		
+
 
 		model = glm::translate(model, glm::vec3(0, 0, dz));
 		model = glm::rotate(model, rot0, glm::vec3(0, 1, 0));
@@ -1061,35 +1061,53 @@ void applicationLoop() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 matIntersección = glm::mat4(1.0);
-		matIntersección = glm::translate(matCarretera2, glm::vec3(15.0, 0.0, -2.5));
-		matIntersección = glm::scale(matIntersección, glm::vec3(10.0, 0.01, 10.0));
+		matIntersección = glm::translate(matCarretera2, glm::vec3(12.5, 0.0, -5.0));
+		matIntersección = glm::scale(matIntersección, glm::vec3(5.0, 0.01, 15.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
 		boxCarretera.render(matIntersección);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 matCarretera3 = glm::mat4(1.0);
-		matCarretera3 = glm::translate(matCarretera3, glm::vec3(0.0, 0.01, -25.0));
+		matCarretera3 = glm::translate(matCarretera, glm::vec3(0.0, 0.01, -5.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
 		boxCarretera.render(glm::scale(matCarretera3, glm::vec3(20.0, 0.01, 5.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
-		
+
 		glm::mat4 matCarretera4 = glm::mat4(1.0);
-		matCarretera4 = glm::translate(matCarretera4, glm::vec3(20.0, 0.01, -25.0));
+		matCarretera4 = glm::translate(matCarretera1, glm::vec3(0.0, 0.01, -5.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
 		boxCarretera.render(glm::scale(matCarretera4, glm::vec3(20.0, 0.01, 5.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
-		
+
 		glm::mat4 matCarretera5 = glm::mat4(1.0);
-		matCarretera5 = glm::translate(matCarretera5, glm::vec3(40.0, 0.01, -25.0));
+		matCarretera5 = glm::translate(matCarretera2, glm::vec3(0.0, 0.01, -5.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
 		boxCarretera.render(glm::scale(matCarretera5, glm::vec3(20.0, 0.01, 5.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 matIntersección2 = glm::mat4(1.0);
-		matIntersección2 = glm::translate(matIntersección2, glm::vec3(-15.0, 0.0, -22.5));
-		matIntersección2 = glm::scale(matIntersección2, glm::vec3(10.0, 0.01, 10.0));
+		matIntersección2 = glm::translate(matCarretera, glm::vec3(-12.5, 0.0, -5.0));
+		matIntersección2 = glm::scale(matIntersección2, glm::vec3(5.0, 0.01, 15.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
 		boxCarretera.render(matIntersección2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matCarretera6 = glm::mat4(1.0);
+		matCarretera6 = glm::translate(matCarretera3, glm::vec3(0.0, 0.01, -5.0));
+		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
+		boxCarretera.render(glm::scale(matCarretera6, glm::vec3(20.0, 0.01, 5.0)));
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matCarretera7 = glm::mat4(1.0);
+		matCarretera7 = glm::translate(matCarretera4, glm::vec3(0.0, 0.01, -5.0));
+		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
+		boxCarretera.render(glm::scale(matCarretera7, glm::vec3(20.0, 0.01, 5.0)));
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matCarretera8 = glm::mat4(1.0);
+		matCarretera8 = glm::translate(matCarretera5, glm::vec3(0.0, 0.01, -5.0));
+		glBindTexture(GL_TEXTURE_2D, IDtextureCarreter);
+		boxCarretera.render(glm::scale(matCarretera8, glm::vec3(20.0, 0.01, 5.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		/*******************************************
@@ -1121,11 +1139,11 @@ void applicationLoop() {
 		modelEclipseChasis.render(modelMatrixEclipseChasis);
 		glActiveTexture(GL_TEXTURE0);
 		//ROTACION LLANDAS PARA ANDAR
-		glm::mat4 modelMatrixEclipseFrontalWheels = glm::mat4(modelMatrixEclipseChasis); 
+		glm::mat4 modelMatrixEclipseFrontalWheels = glm::mat4(modelMatrixEclipseChasis);
 		modelMatrixEclipseFrontalWheels = glm::translate(modelMatrixEclipseFrontalWheels, glm::vec3(0.0, 1.06285, 4.11795));
 		modelMatrixEclipseFrontalWheels = glm::rotate(modelMatrixEclipseFrontalWheels, rotWheely, glm::vec3(0.0, 1.0, 0.0));
 		modelMatrixEclipseFrontalWheels = glm::rotate(modelMatrixEclipseFrontalWheels, rotWheelx, glm::vec3(1.0, 0.0, 0.0));
-		modelMatrixEclipseFrontalWheels = glm::translate(modelMatrixEclipseFrontalWheels, glm::vec3( 0.0 ,-1.06285, -4.11795));
+		modelMatrixEclipseFrontalWheels = glm::translate(modelMatrixEclipseFrontalWheels, glm::vec3(0.0, -1.06285, -4.11795));
 		modelEclipseWheelsFrontal.render(modelMatrixEclipseFrontalWheels);
 		glActiveTexture(GL_TEXTURE0);
 
@@ -1134,7 +1152,7 @@ void applicationLoop() {
 		modelMatrixEclipseRearWheels = glm::translate(modelMatrixEclipseRearWheels, glm::vec3(0.0, 1.05128, -4.34651));
 		modelMatrixEclipseRearWheels = glm::rotate(modelMatrixEclipseRearWheels, rotWheelx, glm::vec3(1.0, 0.0, 0.0));
 		modelMatrixEclipseRearWheels = glm::translate(modelMatrixEclipseRearWheels, glm::vec3(0.0, -1.05128, 4.34651)); //eje de giro en centro d X
-		modelEclipseWheelsRear.render(modelMatrixEclipseRearWheels);		
+		modelEclipseWheelsRear.render(modelMatrixEclipseRearWheels);
 		glActiveTexture(GL_TEXTURE0);
 
 
@@ -1192,13 +1210,13 @@ void applicationLoop() {
 		 // State machine for eclipse car
 		switch (state) {
 		case 0:
-			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
-			advanceCount += 0.1;
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.3));
+			advanceCount += 0.3;
 			rotWheely -= 0.01; //decrementa para enderezar la llanta
-			if (rotWheely < 0) { 
+			if (rotWheely < 0) {
 				rotWheely = 0.0; // si es cero el decremento se recetea en cero
 			}
-			if (advanceCount > 50.0) {
+			if (advanceCount > 60.0) {
 				advanceCount = 0;
 				state = 1;
 			}
@@ -1213,27 +1231,65 @@ void applicationLoop() {
 				rotWheely = glm::radians(10.0f);
 			}
 			if (rotCount >= 180.0) {
-				rotCount = 0;
-				state = 0;
+				rotCount = 1;
+				state = 2;
 			}
+			break;
+		case 2:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
+			advanceCount += 0.1;
+			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			if (rotWheely < 0) {
+				rotWheely = 0.0; // si es cero el decremento se recetea en cero
+			}
+			if (advanceCount > 60.0) {
+				advanceCount = 0;
+				state = 3;
+			}
+			break;
+
+		case 3:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.013));
+			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(-0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
+			rotCount += 0.5f;
+			rotWheely += 0.01;
+			if (rotWheely > glm::radians(10.0f))
+			{
+				rotWheely = glm::radians(-10.0f);
+			}
+			if (rotCount >= 181.0) {
+				rotCount = 1;
+				state = 4;
+			}
+			break;
+		case 4:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
+			advanceCount += 0.1;
+			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			if (rotWheely < 0) {
+				rotWheely = 0.0; // si es cero el decremento se recetea en cero
+			}
+			if (advanceCount > 60.0) {
+				advanceCount = 0;
+				state = 1;
+			}
+			break;
 			break;
 		}
 
+
+
+
+
+
 		switch (stateHeli)
 		{
-		case 0: 
+		case 0:
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, 0.15, 0.15));
-			
+
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
-			
+
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
 
 			rotHelicopteroHelicesY += 0.2;
 			rotHelicopteroHelicesTras += 0.3;
@@ -1244,23 +1300,17 @@ void applicationLoop() {
 			}
 			break;
 
-		case 1: 
+		case 1:
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, 0.15, 0.15));
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, -0.07, 0.0));
 
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.3f), glm::vec3(1.0, 0.0, 0.0));
-			
+
 
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
 
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
+
 			rotHelicopteroHelicesY += 0.2;
 			rotHelicopteroHelicesTras += 0.3;
 			offsetHeliRot += 0.3;
@@ -1277,15 +1327,9 @@ void applicationLoop() {
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.05f), glm::vec3(1.0, 0.0, 0.0));
 
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
 
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
+
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
 			offsetHeliRot += 0.05;
@@ -1302,15 +1346,9 @@ void applicationLoop() {
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.05f), glm::vec3(1.0, 0.0, 0.0));
 
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
 
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
+
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
 			offsetHeliRot += 0.05;
@@ -1327,17 +1365,11 @@ void applicationLoop() {
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, -0.05, 0.0));
 
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.018f), glm::vec3(1.0, 0.0, 0.0));
-			
+
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
 
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
+
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
 			offsetHeliDown += 0.05;
@@ -1350,16 +1382,10 @@ void applicationLoop() {
 
 		case 5:
 			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
-			//modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
-			//modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
 
 			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
-			//modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
-			//modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
-			
-			
+
+
 			offsetHeliHeli -= 0.001;
 			if (offsetHeliHeli > 0.0)
 			{
@@ -1374,7 +1400,7 @@ void applicationLoop() {
 				stateHeli = 6;
 			}
 			break;
-		
+
 		case 6:
 			modelMatrixHelicopteroChasis = glm::mat4(1.0);
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(-10.0, 30.0, -113.0));
@@ -1383,7 +1409,7 @@ void applicationLoop() {
 			break;
 		}
 
-	
+
 
 
 		glfwSwapBuffers(window);
