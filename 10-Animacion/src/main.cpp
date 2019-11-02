@@ -77,6 +77,7 @@ Box boxWall;
 Model modelRock;
 Model modelRailRoad;
 Model modelAircraft;
+Model modelPecebre;
 
 GLuint textureID1, textureID2, textureID3, textureID4, textureID5;
 GLuint skyboxTextureID;
@@ -251,6 +252,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelRailRoad.setShader(&shaderMulLighting);
 
 	modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
+	modelAircraft.setShader(&shaderMulLighting);
+
+	modelAircraft.loadModel("../models/Pesebre0/pesebre0.obj");
 	modelAircraft.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
@@ -772,7 +776,7 @@ void applicationLoop() {
 		sphereLamp.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
 		sphereLamp.render(lightModelmatrix);
 
-		model = glm::translate(model, glm::vec3(0, 0, dz));
+		/*model = glm::translate(model, glm::vec3(0, 0, dz));
 		model = glm::rotate(model, rot0, glm::vec3(0, 1, 0));
 		//box1.enableWireMode();
 		// Usamos la textura ID 1
@@ -814,9 +818,9 @@ void applicationLoop() {
 
 		glm::mat4 ojo2 = glm::translate(model, glm::vec3(-0.25, 0.25, 0.05));
 		//sphere2.enableWireMode();
-		sphere2.render(glm::scale(ojo2, glm::vec3(0.2, 0.2, 0.1)));
+		sphere2.render(glm::scale(ojo2, glm::vec3(0.2, 0.2, 0.1)));*/
 
-		glm::mat4 modelAgua = glm::mat4(1.0);
+		/*glm::mat4 modelAgua = glm::mat4(1.0);
 		modelAgua = glm::translate(modelAgua, glm::vec3(5.0, 0.01, 5.0));
 		modelAgua = glm::scale(modelAgua, glm::vec3(5.0, 0.01, 5.0));
 		// Se activa la textura del agua
@@ -839,9 +843,9 @@ void applicationLoop() {
 		modelSphere = glm::translate(modelSphere, glm::vec3(10.0, 0.5, 0.0));
 		glBindTexture(GL_TEXTURE_2D, textureID3);
 		sphere3.render(modelSphere);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
 
-		glm::mat4 modelCylinder = glm::mat4(1.0);
+		/*glm::mat4 modelCylinder = glm::mat4(1.0);
 		modelCylinder = glm::translate(modelCylinder,
 				glm::vec3(-3.0, 0.5, 0.0));
 		// Envolvente desde el indice 0, el tamanio es 20 * 20 * 6
@@ -861,9 +865,9 @@ void applicationLoop() {
 				cylinder2.getSlices() * cylinder2.getStacks() * 6
 						+ cylinder2.getSlices() * 3, cylinder2.getSlices() * 3,
 				modelCylinder);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
 
-		// Render del cubo con textura de ladrillos y con repeticion en x
+		/*// Render del cubo con textura de ladrillos y con repeticion en x
 		glm::mat4 cubeTextureModel = glm::mat4(1.0);
 		cubeTextureModel = glm::translate(cubeTextureModel,
 				glm::vec3(-5.0, 0.5, 3.0));
@@ -873,9 +877,9 @@ void applicationLoop() {
 		box3.render(cubeTextureModel);
 		shaderMulLighting.setVectorFloat2("scaleUV",
 				glm::value_ptr(glm::vec2(0.0, 0.0)));
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
 
-		// Render del cyindro con materiales
+		/*// Render del cyindro con materiales
 		glm::mat4 cylinderMaterialModel = glm::mat4(1.0);
 		cylinderMaterialModel = glm::translate(cylinderMaterialModel,  glm::vec3(3.0, 0.5, -3.0));
 		shaderMaterialLighting.setVectorFloat3("material.ambient", glm::value_ptr(glm::vec3(0.61424f, 0.04136f, 0.04136f)));
@@ -890,9 +894,9 @@ void applicationLoop() {
 		shaderMaterialLighting.setVectorFloat3("material.diffuse", glm::value_ptr(glm::vec3(0.61424f, 0.04136f, 0.04136f)));
 		shaderMaterialLighting.setVectorFloat3("material.specular", glm::value_ptr(glm::vec3(0.727811f, 0.626959f, 0.626959f)));
 		shaderMaterialLighting.setFloat("material.shininess", 76.8f);
-		boxMaterials.render(boxMaterialModel);
+		boxMaterials.render(boxMaterialModel);*/
 
-		//Models complex render
+		/*//Models complex render
 		glm::mat4 matrixModelRock = glm::mat4(1.0);
 		matrixModelRock = glm::translate(matrixModelRock, glm::vec3(-3.0, 0.0, 6.0));
 		modelRock.render(matrixModelRock);
@@ -903,9 +907,9 @@ void applicationLoop() {
 		matrixModelRailroad = glm::translate(matrixModelRailroad, glm::vec3(3.0, 0.0, 10.0));
 		modelRailRoad.render(matrixModelRailroad);
 		// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);*/
 
-		glBindTexture(GL_TEXTURE_2D, textureID4);
+		/*glBindTexture(GL_TEXTURE_2D, textureID4);
 		boxWall.setScale(glm::vec3(10.0, 5.0, 0.05));
 		boxWall.setPosition(glm::vec3(-10.0, 2.5, 0.0));
 		boxWall.setOrientation(glm::vec3(0.0, 0.0, 0.0));
@@ -926,12 +930,22 @@ void applicationLoop() {
 		boxWall.setPosition(glm::vec3(-10.0, 5, -5.0));
 		boxWall.setOrientation(glm::vec3(90.0, 0.0, 0.0));
 		boxWall.render();
+		glBindTexture(GL_TEXTURE_2D, 0);*/
+
+		glm::mat4 matPesebre = glm::mat4(1.0);
+		matPesebre = glm::translate(matPesebre, glm::vec3(1.0, 1.0, 1.0));
+		matPesebre = glm::scale(matPesebre, glm::vec3(10.0, 10.0, 10.0));
+		modelPecebre.render(matPesebre);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		
+		glm::mat4 cubo = glm::mat4(1.0);
+		cubo = glm::translate(cubo, glm::vec3(0.0, 0.0, 0.0));
+		box1.render(glm::scale(cubo, glm::vec3(1.0, 1.0, 1.0)));
+
+		/*
 		modelAircraft.render(matrixModelAircraft);
 		glActiveTexture(GL_TEXTURE0);
-
+		*/
 		if (angle > 2 * M_PI)
 			angle = 0.0;
 		else
