@@ -86,7 +86,11 @@ Model modelEclipseWheelsRear;
 Model modelHelicopteroChasis;
 Model modelHelicopterohelisesMid;
 Model modelHelicopteroHelisesTras;
-
+Model modelLamboChasis;
+Model modelLamboDoorL;
+Model modelLamboDoorR;
+Model modelLAmboLlantaD;
+Model modelLamboLlantaT;
 
 
 GLuint textureID1, textureID2, textureID3, textureID4, textureID5, IDtextureCarreter, IDtextureAsfalto;
@@ -291,7 +295,22 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelHelicopteroHelisesTras.loadModel("../models/Helicopter/Mi_24_HelisesTraseras.obj");
 	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
 
-	camera->setPosition(glm::vec3(0.0, 20.0, -40.0));
+	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
+	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+
+	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_left_dor.obj");
+	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+
+	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_Right_dor.obj");
+	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+
+	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaFrente.obj");
+	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+
+	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaTrasera.obj");
+	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+
+	camera->setPosition(glm::vec3(40.0, 5.0, -20.0));
 
 	// Descomentar
 	// Definimos el tamanio de la imagen
@@ -686,12 +705,11 @@ void applicationLoop() {
 	glm::mat4 modelMatrixHelicopteroChasis = glm::mat4(1.0);
 	modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(-10.0, 30.0, -113.0));
 	modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
+	glActiveTexture(GL_TEXTURE0);
 
 	glm::mat4 modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
 	glm::mat4 modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-
-
+	glActiveTexture(GL_TEXTURE0);
 
 
 
@@ -1113,6 +1131,18 @@ void applicationLoop() {
 		/*******************************************
 		 * Custom objects obj
 		 *******************************************/
+
+
+		 /*******************************************
+		  * LAMBO
+		  *******************************************/
+
+		glm::mat4 matLamboChasis = glm::mat4(1.0);
+		matLamboChasis = glm::translate(matLamboChasis, glm::vec3(0.0, 0.0, 0.0));
+		modelLamboChasis.render(matLamboChasis);
+		glActiveTexture(GL_TEXTURE0);
+
+
 		 //Rock render
 		glm::mat4 matrixModelRock = glm::mat4(1.0);
 		matrixModelRock = glm::translate(matrixModelRock, glm::vec3(-3.0, 0.0, 6.0));
@@ -1156,6 +1186,7 @@ void applicationLoop() {
 		glActiveTexture(GL_TEXTURE0);
 
 
+
 		//HELICOPTERO
 		//chasis
 		//glm::mat4 modelMatrixHelicopteroChasis = glm::mat4(1.0);
@@ -1177,6 +1208,18 @@ void applicationLoop() {
 		modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
 		modelHelicopteroHelisesTras.render(modelMAtrizHelicoteroHelicesTras);
 		glActiveTexture(GL_TEXTURE0);
+
+
+		
+
+
+
+
+
+
+
+
+
 
 		/*******************************************
 		 * Skybox
@@ -1202,7 +1245,7 @@ void applicationLoop() {
 		dz = 0;
 		rot0 = 0;
 		offX += 0.1;
-		rotWheelx += 0.1;
+		//rotWheelx += 0.1;
 
 		/*******************************************
 		 * State machines
@@ -1210,8 +1253,9 @@ void applicationLoop() {
 		 // State machine for eclipse car
 		switch (state) {
 		case 0:
-			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.3));
-			advanceCount += 0.3;
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.2));
+			advanceCount += 0.2;
+			rotWheelx += 0.3;
 			rotWheely -= 0.01; //decrementa para enderezar la llanta
 			if (rotWheely < 0) {
 				rotWheely = 0.0; // si es cero el decremento se recetea en cero
@@ -1226,9 +1270,10 @@ void applicationLoop() {
 			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
 			rotCount += 0.5f;
 			rotWheely += 0.01;
-			if (rotWheely > glm::radians(10.0f))
+			rotWheelx += 0.08;
+			if (rotWheely > glm::radians(8.0f))
 			{
-				rotWheely = glm::radians(10.0f);
+				rotWheely = glm::radians(8.0f);
 			}
 			if (rotCount >= 180.0) {
 				rotCount = 1;
@@ -1236,9 +1281,10 @@ void applicationLoop() {
 			}
 			break;
 		case 2:
-			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
-			advanceCount += 0.1;
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.2));
+			advanceCount += 0.2;
 			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			rotWheelx += 0.3;
 			if (rotWheely < 0) {
 				rotWheely = 0.0; // si es cero el decremento se recetea en cero
 			}
@@ -1252,10 +1298,11 @@ void applicationLoop() {
 			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.013));
 			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(-0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
 			rotCount += 0.5f;
-			rotWheely += 0.01;
-			if (rotWheely > glm::radians(10.0f))
+			rotWheely -= 0.01;
+			rotWheelx += 0.08;
+			if (rotWheely < glm::radians(-12.0f))
 			{
-				rotWheely = glm::radians(-10.0f);
+				rotWheely = glm::radians(-12.0f);
 			}
 			if (rotCount >= 181.0) {
 				rotCount = 1;
@@ -1263,19 +1310,91 @@ void applicationLoop() {
 			}
 			break;
 		case 4:
-			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
-			advanceCount += 0.1;
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.2));
+			advanceCount += 0.2;
 			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			rotWheelx += 0.3;
 			if (rotWheely < 0) {
 				rotWheely = 0.0; // si es cero el decremento se recetea en cero
 			}
 			if (advanceCount > 60.0) {
 				advanceCount = 0;
-				state = 1;
+				state = 5;
 			}
 			break;
+		case 5:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.01));
+			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
+			rotCount += 0.5f;
+			rotWheely += 0.01;
+			rotWheelx += 0.08;
+			if (rotWheely > glm::radians(10.0f))
+			{
+				rotWheely = glm::radians(10.0f);
+			}
+			if (rotCount >= 181.0) {
+				rotCount = 1;
+				state = 6;
+			}
+			break;
+		case 6:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.2));
+			advanceCount += 0.2;
+			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			rotWheelx += 0.3;
+			if (rotWheely < 0) {
+				rotWheely = 0.0; // si es cero el decremento se recetea en cero
+			}
+			if (advanceCount > 60.0) {
+				advanceCount = 0;
+				state = 7;
+			}
+			break;
+		case 7:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.01));
+			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
+			rotCount += 0.5f;
+			rotWheely += 0.01;
+			rotWheelx += 0.08;
+			if (rotWheely > glm::radians(12.0f))
+			{
+				rotWheely = glm::radians(12.0f);
+			}
+			if (rotCount >= 91.0) {
+				rotCount = 1;
+				state = 8;
+			}
+			break;
+		case 8:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.1));
+			advanceCount += 0.1;
+			rotWheely -= 0.01; //decrementa para enderezar la llanta
+			rotWheelx += 0.3;
+			if (rotWheely < 0) {
+				rotWheely = 0.0; // si es cero el decremento se recetea en cero
+			}
+			if (advanceCount > 10.0) {
+				advanceCount = 0;
+				state = 9;
+			}
+			break;
+		case 9:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.01));
+			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(0.5f), glm::vec3(0, 1, 0)); //rota en eje Y para girar la llanta
+			rotCount += 0.5f;
+			rotWheely += 0.01;
+			rotWheelx += 0.08;
+			if (rotWheely > glm::radians(12.0f))
+			{
+				rotWheely = glm::radians(12.0f);
+			}
+			if (rotCount >= 91.0) {
+				rotCount = 1;
+				state = 0;
+			}
 			break;
 		}
+
 
 
 
@@ -1408,10 +1527,7 @@ void applicationLoop() {
 			stateHeli = 0;
 			break;
 		}
-
-
-
-
+			   		 
 		glfwSwapBuffers(window);
 	}
 }
