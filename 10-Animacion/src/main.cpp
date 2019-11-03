@@ -77,7 +77,7 @@ Box boxWall;
 Model modelRock;
 Model modelRailRoad;
 Model modelAircraft;
-Model modelPecebre;
+Model modelPesebre;
 
 GLuint textureID1, textureID2, textureID3, textureID4, textureID5;
 GLuint skyboxTextureID;
@@ -254,8 +254,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
 	modelAircraft.setShader(&shaderMulLighting);
 
-	modelAircraft.loadModel("../models/Pesebre0/pesebre0.obj");
-	modelAircraft.setShader(&shaderMulLighting);
+	modelPesebre.loadModel("../models/Pesebre0/pecebre.obj");
+	modelPesebre.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
 
@@ -935,13 +935,10 @@ void applicationLoop() {
 		glm::mat4 matPesebre = glm::mat4(1.0);
 		matPesebre = glm::translate(matPesebre, glm::vec3(1.0, 1.0, 1.0));
 		matPesebre = glm::scale(matPesebre, glm::vec3(10.0, 10.0, 10.0));
-		modelPecebre.render(matPesebre);
+		modelPesebre.render(matPesebre);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 cubo = glm::mat4(1.0);
-		cubo = glm::translate(cubo, glm::vec3(0.0, 0.0, 0.0));
-		box1.render(glm::scale(cubo, glm::vec3(1.0, 1.0, 1.0)));
-
+		
 		/*
 		modelAircraft.render(matrixModelAircraft);
 		glActiveTexture(GL_TEXTURE0);
