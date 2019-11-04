@@ -78,6 +78,7 @@ Model modelRock;
 Model modelRailRoad;
 Model modelAircraft;
 Model modelPesebre;
+Model modelEstablo;
 
 GLuint textureID1, textureID2, textureID3, textureID4, textureID5;
 GLuint skyboxTextureID;
@@ -256,6 +257,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	modelPesebre.loadModel("../models/Pesebre0/pecebre.obj");
 	modelPesebre.setShader(&shaderMulLighting);
+
+	modelEstablo.loadModel("../models/Establo/16444_Rustic Small Horse Stable_.obj");
+	modelEstablo.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
 
@@ -932,10 +936,16 @@ void applicationLoop() {
 		boxWall.render();
 		glBindTexture(GL_TEXTURE_2D, 0);*/
 
-		glm::mat4 matPesebre = glm::mat4(1.0);
+		/*glm::mat4 matPesebre = glm::mat4(1.0);
 		matPesebre = glm::translate(matPesebre, glm::vec3(1.0, 1.0, 1.0));
 		matPesebre = glm::scale(matPesebre, glm::vec3(10.0, 10.0, 10.0));
 		modelPesebre.render(matPesebre);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
+
+		glm::mat4 matPesebre = glm::mat4(1.0);
+		matPesebre = glm::translate(matPesebre, glm::vec3(1.0, 1.0, 1.0));
+		matPesebre = glm::scale(matPesebre, glm::vec3(10.0, 10.0, 10.0));
+		modelEstablo.render(matPesebre);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		
