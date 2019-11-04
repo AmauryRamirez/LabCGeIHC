@@ -89,7 +89,7 @@ Model modelHelicopteroHelisesTras;
 Model modelLamboChasis;
 Model modelLamboDoorL;
 Model modelLamboDoorR;
-Model modelLAmboLlantaD;
+Model modelLamboLlantaD;
 Model modelLamboLlantaT;
 
 
@@ -295,20 +295,20 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelHelicopteroHelisesTras.loadModel("../models/Helicopter/Mi_24_HelisesTraseras.obj");
 	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
 
-	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
-	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+	modelLamboChasis.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
+	modelLamboChasis.setShader(&shaderMulLighting);
 
-	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_left_dor.obj");
-	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+	modelLamboDoorL.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_left_dor.obj");
+	modelLamboDoorL.setShader(&shaderMulLighting);
 
-	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_Right_dor.obj");
-	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+	modelLamboDoorR.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_Right_dor.obj");
+	modelLamboDoorR.setShader(&shaderMulLighting);
 
-	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaFrente.obj");
-	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+	modelLamboLlantaD.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaFrente.obj");
+	modelLamboLlantaD.setShader(&shaderMulLighting);
 
-	modelHelicopteroHelisesTras.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaTrasera.obj");
-	modelHelicopteroHelisesTras.setShader(&shaderMulLighting);
+	modelLamboLlantaT.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_llantaTrasera.obj");
+	modelLamboLlantaT.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(40.0, 5.0, -20.0));
 
@@ -700,18 +700,23 @@ void applicationLoop() {
 	float rotHelicopteroHelicesY = 0.0;
 	float rotHelicopteroHelicesTras = 0.0;
 
+	int stateLambo = 0.0;
+	float LamboAdvance = 0.0;
+	float LamboRot = 0.0;
+
 
 	//SE CREA EL OBJETO DEL HELICOPTERO PARA DARLE ANIMACIÓN DE MOVIMINETO
 	glm::mat4 modelMatrixHelicopteroChasis = glm::mat4(1.0);
 	modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(-10.0, 30.0, -113.0));
 	modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-	glActiveTexture(GL_TEXTURE0);
+
 
 	glm::mat4 modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
 	glm::mat4 modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
-	glActiveTexture(GL_TEXTURE0);
 
-
+	glm::mat4 matLamboChasis = glm::mat4(1.0);
+	matLamboChasis = glm::translate(matLamboChasis, glm::vec3(-80.0, 0.0, -80.0));
+	matLamboChasis = glm::rotate(matLamboChasis, glm::radians(90.f), glm::vec3(0.0, 1.0, 0.0));
 
 
 
@@ -1137,9 +1142,25 @@ void applicationLoop() {
 		  * LAMBO
 		  *******************************************/
 
-		glm::mat4 matLamboChasis = glm::mat4(1.0);
-		matLamboChasis = glm::translate(matLamboChasis, glm::vec3(0.0, 0.0, 0.0));
 		modelLamboChasis.render(matLamboChasis);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 matLamboDoorL = glm::mat4(matLamboChasis);
+		//matLamboDoorL = glm::translate(matLamboDoorL, glm::vec3());
+		modelLamboDoorL.render(matLamboDoorL);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 matLamboDoorR = glm::mat4(matLamboChasis);
+		//matLamboDoorR = glm::translate(matLamboDoorL, glm::vec3());
+		modelLamboDoorR.render(matLamboDoorR);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 matLamboLlantaD = glm::mat4(matLamboChasis);
+		modelLamboLlantaD.render(matLamboLlantaD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 matLamboLlantaT = glm::mat4(matLamboChasis);
+		modelLamboLlantaT.render(matLamboLlantaT);
 		glActiveTexture(GL_TEXTURE0);
 
 
@@ -1196,6 +1217,7 @@ void applicationLoop() {
 		glActiveTexture(GL_TEXTURE0);
 
 		//glm::mat4 modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+		modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
 		modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, 1.88318, -0.254566));
 		modelMatrixHelicopteroHelicesMedio = glm::rotate(modelMatrixHelicopteroHelicesMedio, rotHelicopteroHelicesY, glm::vec3(0.0, 1.0, 0.0));//Rotación en eje Y
 		modelMatrixHelicopteroHelicesMedio = glm::translate(modelMatrixHelicopteroHelicesMedio, glm::vec3(0.003344, -1.88318, 0.254566));
@@ -1203,12 +1225,12 @@ void applicationLoop() {
 		glActiveTexture(GL_TEXTURE0);
 
 		//glm::mat4 modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+		modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 		modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.013066, 2.09313, -5.64823));
 		modelMAtrizHelicoteroHelicesTras = glm::rotate(modelMAtrizHelicoteroHelicesTras, rotHelicopteroHelicesTras, glm::vec3(1.0, 0.0, 0.0));//Rotación en eje Y
 		modelMAtrizHelicoteroHelicesTras = glm::translate(modelMAtrizHelicoteroHelicesTras, glm::vec3(0.016412, -2.09, 5.64823));
 		modelHelicopteroHelisesTras.render(modelMAtrizHelicoteroHelicesTras);
 		glActiveTexture(GL_TEXTURE0);
-
 
 		
 
@@ -1250,6 +1272,37 @@ void applicationLoop() {
 		/*******************************************
 		 * State machines
 		 *******************************************/
+		switch (stateLambo) {
+		case 0:
+			matLamboChasis = glm::translate(matLamboChasis, glm::vec3(0.0, 0.0, 0.4));
+			LamboAdvance += 0.4;
+			if (LamboAdvance > 80.0) {
+				LamboAdvance = 0.0;
+				stateLambo = 1;
+			}
+			break;
+
+		case 1:
+			matLamboChasis = glm::translate(matLamboChasis, glm::vec3(0.07, 0.0, 0.25));
+			matLamboChasis = glm::rotate(matLamboChasis, glm::radians(-0.5f), glm::vec3(0.0, 1.0, 0.0));
+
+			LamboRot += 0.5;
+
+			if (LamboRot >= 180) {
+				LamboRot = 0.0;
+				stateLambo = 2;
+			}
+			break;
+
+		case 2:
+
+			break;
+
+		}
+
+
+
+
 		 // State machine for eclipse car
 		switch (state) {
 		case 0:
@@ -1405,10 +1458,8 @@ void applicationLoop() {
 		{
 		case 0:
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, 0.15, 0.15));
-
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 			rotHelicopteroHelicesY += 0.2;
 			rotHelicopteroHelicesTras += 0.3;
@@ -1422,13 +1473,10 @@ void applicationLoop() {
 		case 1:
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, 0.15, 0.15));
 			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(0.0, -0.07, 0.0));
-
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.3f), glm::vec3(1.0, 0.0, 0.0));
-
-
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 			rotHelicopteroHelicesY += 0.2;
 			rotHelicopteroHelicesTras += 0.3;
@@ -1445,9 +1493,8 @@ void applicationLoop() {
 
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.05f), glm::vec3(1.0, 0.0, 0.0));
 
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
@@ -1464,9 +1511,8 @@ void applicationLoop() {
 
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.05f), glm::vec3(1.0, 0.0, 0.0));
 
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
@@ -1485,9 +1531,8 @@ void applicationLoop() {
 
 			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(-0.018f), glm::vec3(1.0, 0.0, 0.0));
 
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 			rotHelicopteroHelicesY += 0.25;
 			rotHelicopteroHelicesTras += 0.25;
@@ -1500,9 +1545,8 @@ void applicationLoop() {
 			break;
 
 		case 5:
-			modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
-
-			modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMatrixHelicopteroHelicesMedio = glm::mat4(modelMatrixHelicopteroChasis);
+			//modelMAtrizHelicoteroHelicesTras = glm::mat4(modelMatrixHelicopteroChasis);
 
 
 			offsetHeliHeli -= 0.001;
@@ -1521,10 +1565,6 @@ void applicationLoop() {
 			break;
 
 		case 6:
-			modelMatrixHelicopteroChasis = glm::mat4(1.0);
-			modelMatrixHelicopteroChasis = glm::translate(modelMatrixHelicopteroChasis, glm::vec3(-10.0, 30.0, -113.0));
-			modelMatrixHelicopteroChasis = glm::rotate(modelMatrixHelicopteroChasis, glm::radians(45.0f), glm::vec3(1.0, 0.0, 0.0));
-			stateHeli = 0;
 			break;
 		}
 			   		 
