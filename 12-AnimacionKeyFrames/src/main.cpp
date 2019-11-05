@@ -597,7 +597,7 @@ bool processInput(bool continueApplication) {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		if (cameraSel == 0)
-			camera->moveFrontCamera(false, deltaTime);
+			camera->moveFrontCamera(true, deltaTime);
 		else if(cameraSel == 1)
 			camera2->moveFrontCamera(true, deltaTime);
 	}
