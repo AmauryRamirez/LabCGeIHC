@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <windows.h>
 //glew include
 #include <GL/glew.h>
 
@@ -99,6 +100,26 @@ Model modelDartLegoLeftHand;
 Model modelDartLegoRightHand;
 Model modelDartLegoLeftLeg;
 Model modelDartLegoRightLeg;
+//MODEL BUZZ
+Model modelBuzzLightTorso;
+Model modelBuzzLightAlaD2;
+Model modelBuzzLightAlaD1;
+Model modelBuzzLightPiernaD;
+Model modelBuzzLightManoD;
+Model modelBuzzLightBrazoD;
+Model modelBuzzLightPieD;
+Model modelBuzzLightPantorrillaD;
+Model modelBuzzLightAnteBrazoD;
+Model modelBuzzLightAlaI1;
+Model modelBuzzLightAlaI2;
+Model modelBuzzLightPiernaI;
+Model modelBuzzLightManoI;
+Model modelBuzzLightBrazoI;
+Model modelBuzzLightPieI;
+Model modelBuzzLightPantorrilaI;
+Model modelBuzzLightAntebrazoI;
+Model modelBuzzLightCadera;
+Model modelBuzzLightCabeza;
 
 glm::mat4 view;
 
@@ -130,6 +151,9 @@ float rot1 = 0.0, rot2 = 0.0, rot3 = 0.0, rot4 = 0.0;
 // Descomentar
 float rotDartHead = 0.0, rotDartBody = 0.0, advanceDartBody = 0.0, rotDartLeftArm = 0.0,
 		rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
+//MOVIMIENTOS BUZZ	
+
+
 int modelSelected = 0;
 bool enableCountSelected = true;
 
@@ -341,6 +365,86 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDartLegoLeftLeg.setShader(&shaderMulLighting);
 	modelDartLegoRightLeg.loadModel("../models/LegoDart/LeoDart_right_leg.obj");
 	modelDartLegoRightLeg.setShader(&shaderMulLighting);
+
+	//initialization Buzz
+
+
+	modelBuzzLightCabeza.loadModel("../models/buzz/buzzlightyHead.obj");
+	modelBuzzLightCabeza.setShader(&shaderMulLighting);
+	
+	modelBuzzLightCadera.loadModel("../models/buzz/buzzlightyHip.obj");
+	modelBuzzLightCadera.setShader(&shaderMulLighting);
+
+	modelBuzzLightAntebrazoI.loadModel("../models/buzz/buzzlightyLeftArm.obj");
+	modelBuzzLightAntebrazoI.setShader(&shaderMulLighting);
+
+	modelBuzzLightPantorrilaI.loadModel("../models/buzz/buzzlightyLeftCalf.obj");
+	modelBuzzLightPantorrilaI.setShader(&shaderMulLighting);
+
+	modelBuzzLightPieI.loadModel("../models/buzz/buzzlightyLeftFoot.obj");
+	modelBuzzLightPieI.setShader(&shaderMulLighting);
+
+	modelBuzzLightBrazoI.loadModel("../models/buzz/buzzlightyLeftForearm.obj");
+	modelBuzzLightBrazoI.setShader(&shaderMulLighting);
+
+	modelBuzzLightManoI.loadModel("../models/buzz/buzzlightyLeftHand.obj");
+	modelBuzzLightManoI.setShader(&shaderMulLighting);
+
+	modelBuzzLightPiernaI.loadModel("../models/buzz/buzzlightyLeftThigh.obj");
+	modelBuzzLightPiernaI.setShader(&shaderMulLighting);
+
+	modelBuzzLightAlaI2.loadModel("../models/buzz/buzzlightyLeftWing1.obj");
+	modelBuzzLightAlaI2.setShader(&shaderMulLighting);
+
+	modelBuzzLightAlaI1.loadModel("../models/buzz/buzzlightyLeftWing2.obj");
+	modelBuzzLightAlaI1.setShader(&shaderMulLighting);
+
+	modelBuzzLightAnteBrazoD.loadModel("../models/buzz/buzzlightyRightArm.obj");
+	modelBuzzLightAnteBrazoD.setShader(&shaderMulLighting);
+
+	modelBuzzLightPantorrillaD.loadModel("../models/buzz/buzzlightyRightCalf.obj");
+	modelBuzzLightPantorrillaD.setShader(&shaderMulLighting);
+
+	modelBuzzLightPieD.loadModel("../models/buzz/buzzlightyRightFoot.obj");
+	modelBuzzLightPieD.setShader(&shaderMulLighting);
+
+	modelBuzzLightBrazoD.loadModel("../models/buzz/buzzlightyRightForearm.obj");
+	modelBuzzLightBrazoD.setShader(&shaderMulLighting);
+
+	modelBuzzLightManoD.loadModel("../models/buzz/buzzlightyRightHand.obj");
+	modelBuzzLightManoD.setShader(&shaderMulLighting);
+
+	modelBuzzLightPiernaD.loadModel("../models/buzz/buzzlightyRightThigh.obj");
+	modelBuzzLightPiernaD.setShader(&shaderMulLighting);
+
+	modelBuzzLightAlaD1.loadModel("../models/buzz/buzzlightyRightWing1.obj");
+	modelBuzzLightAlaD1.setShader(&shaderMulLighting);
+
+	modelBuzzLightAlaD2.loadModel("../models/buzz/buzzlightyRightWing2.obj");
+	modelBuzzLightAlaD2.setShader(&shaderMulLighting);
+
+	modelBuzzLightTorso.loadModel("../models/buzz/buzzlightyTorso.obj");
+	modelBuzzLightTorso.setShader(&shaderMulLighting);
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
@@ -687,9 +791,86 @@ bool processInput(bool continueApplication) {
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		dz = -0.1;
 
+	//*****************************
+	//MOVIMIENTOS BUZZ
+	//*****************************
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_U)
+		buzzRotHead += 0.02;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_U)
+		buzzRotHead -= 0.02;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		buzzRotBrazoD += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		buzzRotBrazoD -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+		buzzRotAnteBrazoD += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+		buzzRotAnteBrazoD -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		buzzRotAnteBrazoI += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+		buzzRotAnteBrazoI -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+		buzzRotBrazoI += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+		buzzRotBrazoI -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+		buzzRotTorso += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+		buzzRotTorso -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		buzzRotPiernaD += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		buzzRotPiernaD -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+		buzzRotPantorrillaD += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+		buzzRotPantorrillaD -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		buzzRotPiernaI += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		buzzRotPiernaI -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		buzzRotPantorrillaI += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		buzzRotPantorrillaI -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		buzzRotPieD += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		buzzRotPPieD -= 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+		glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		buzzRotPieI += 0.2;
+	if (modelSelect == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		buzzRotPPieI -= 0.2;
+
+
 	// Descomentar
 	// Dart Lego model movements
-	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+	/*if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
 			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		rotDartHead += 0.02;
 	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
@@ -745,7 +926,7 @@ bool processInput(bool continueApplication) {
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 		advanceDartBody = -0.02;
 	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		advanceDartBody = 0.02;
+		advanceDartBody = 0.02;*/
 
 	//camara cambiar a camara2
 
@@ -800,10 +981,10 @@ void applicationLoop() {
 
 	lastTime = TimeManager::Instance().GetTime();
 
-	
 
 
 	while (psi) {
+
 		currTime = TimeManager::Instance().GetTime();
 		if(currTime - lastTime < 0.016666667){
 			glfwPollEvents();
@@ -1269,6 +1450,89 @@ void applicationLoop() {
 		glActiveTexture(GL_TEXTURE0); // IMPORTANTE regresar a la textura 0
 		// Se regresa el cull faces IMPORTANTE para la capa
 		glEnable(GL_CULL_FACE);
+
+		//BUZZLIGHT
+		glm::mat4 buzzTorso = glm::mat4(1.0);
+		buzzTorso = glm::translate(buzzTorso, glm::vec3(-5.0, 5.03, 0.9));
+		buzzTorso = glm::scale(buzzTorso, glm::vec3(1.0, 1.0, 1.0));
+		modelBuzzLightTorso.render(buzzTorso);
+		glActiveTexture(GL_TEXTURE0); // IMPORTANTE regresar a la textura 0
+
+		glm::mat4 buzzAlaD2 = glm::mat4(buzzTorso);
+		modelBuzzLightAlaD2.render(buzzAlaD2);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzAlaD1 = glm::mat4(buzzTorso);
+		modelBuzzLightAlaD1.render(buzzAlaD1);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPiernaD = glm::mat4(buzzTorso);
+		modelBuzzLightPiernaD.render(buzzPiernaD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzManoD = glm::mat4(buzzTorso);
+		modelBuzzLightManoD.render(buzzManoD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzBrazoD = glm::mat4(buzzTorso);
+		modelBuzzLightBrazoD.render(buzzBrazoD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPieD = glm::mat4(buzzTorso);
+		modelBuzzLightPieD.render(buzzPieD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPantorrillaD = glm::mat4(buzzTorso);
+		modelBuzzLightPantorrillaD.render(buzzPantorrillaD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzAnteBrazoD = glm::mat4(buzzTorso);
+		modelBuzzLightAnteBrazoD.render(buzzAnteBrazoD);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzAlaI1 = glm::mat4(buzzTorso);
+		modelBuzzLightAlaI1.render(buzzAlaI1);;
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzAlaI2 = glm::mat4(buzzTorso);
+		modelBuzzLightAlaI2.render(buzzAlaI2);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPiernaI = glm::mat4(buzzTorso);
+		modelBuzzLightPiernaI.render(buzzPiernaI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzManoI = glm::mat4(buzzTorso);
+		modelBuzzLightManoI.render(buzzManoI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzBrazoI = glm::mat4(buzzTorso);
+		modelBuzzLightBrazoI.render(buzzBrazoI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPieI = glm::mat4(buzzTorso);
+		modelBuzzLightPieI.render(buzzPieI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzPantorrillaI = glm::mat4(buzzTorso);
+		modelBuzzLightPantorrilaI.render(buzzPantorrillaI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzAntebrazoI = glm::mat4(buzzTorso);
+		modelBuzzLightAntebrazoI.render(buzzAntebrazoI);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzCadera = glm::mat4(buzzTorso);
+		modelBuzzLightCadera.render(buzzCadera);
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 buzzCabeza = glm::mat4(buzzTorso);
+		modelBuzzLightCabeza.render(buzzCabeza);
+		glActiveTexture(GL_TEXTURE0);
+
+
+
+
 
 		// Para salvar el frame
 		if(record && modelSelected == 1){
