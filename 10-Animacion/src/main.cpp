@@ -80,7 +80,7 @@ Model modelAircraft;
 Model modelPesebre;
 Model modelEstablo;
 
-GLuint textureID1, textureID2, textureID3, textureID4, textureID5;
+GLuint textureID1, textureID2, textureID3, textureID4, textureID5, IDtextuLuna;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -424,6 +424,29 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	// Libera la memoria de la textura
 	texture5.freeImage(bitmap);
+
+	/**************************************************************************************************************
+				TEXTURA - LUNA
+	***************************************************************************************************************/
+	Texture textuLuna("../Textures/Luna.jpg");
+	bitmap = textuLuna.loadImage(false);
+	data = textuLuna.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuLuna);
+	glBindTexture(GL_TEXTURE_2D, IDtextuLuna);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuLuna.freeImage(bitmap);
+	//--------------------------
+
 
 	// Carga de texturas para el skybox
 	Texture skyboxTexture = Texture("");
@@ -779,6 +802,15 @@ void applicationLoop() {
 		sphereLamp.setPosition(glm::vec3(0, 0, 0));
 		sphereLamp.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
 		sphereLamp.render(lightModelmatrix);
+
+		glm::mat4 matCalle = glm::mat4(1.0);
+		matCalle = glm::translate(matCalle, glm::vec3(0.0, -0.005, 0.0));
+		matCalle = glm::scale(matCalle, glm::vec3(0.2, 0.01, 2.0));
+		glBindTexture(GL_TEXTURE_2D, IDtextuLuna);
+		box1.render(matCalle);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+
 
 		/*model = glm::translate(model, glm::vec3(0, 0, dz));
 		model = glm::rotate(model, rot0, glm::vec3(0, 1, 0));

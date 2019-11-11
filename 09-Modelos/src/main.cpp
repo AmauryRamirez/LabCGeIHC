@@ -475,7 +475,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	//----------------------------TEXTURA ASFALTO--------------------------------------------------------------
 	Texture textuAsfalto("../Textures/asfalto.jpg");
-	bitmap = textuAsfalto.loadImage(false);
+	bitmap = textuAsfalto.loadImage(TRUE);
 	data = textuAsfalto.convertToData(bitmap, imageWidth, imageHeight);
 	glGenTextures(1, &IDtextureAsfalto);
 	glBindTexture(GL_TEXTURE_2D, IDtextureAsfalto);
