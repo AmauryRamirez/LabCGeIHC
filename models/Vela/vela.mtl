@@ -1,8 +1,8 @@
 # Blender MTL File: 'None'
 # Material Count: 2
 
-newmtl _SconceWallSconce_candle
-Ns 52.941176
+newmtl _SconceWallSconce_candle.001
+Ns 50.980392
 Ka 0.915033 0.915033 0.915033
 Kd 1.000000 0.949000 0.796100
 Ks 0.135000 0.135000 0.135000
@@ -13,8 +13,8 @@ illum 2
 map_Kd CandleDiff.jpg
 map_Ka CandleDiff.jpg
 
-newmtl _SconceWallSconce_metall
-Ns 58.823529
+newmtl _SconceWallSconce_metall.001
+Ns 56.862745
 Ka 0.156900 0.156900 0.156900
 Kd 0.156900 0.156900 0.156900
 Ks 0.810000 0.810000 0.810000
