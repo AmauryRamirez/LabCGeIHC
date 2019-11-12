@@ -1,0 +1,28 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 28.11.2011 09:41:52
+
+newmtl _SconceWallSconce_metall
+	Ns 60.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.1569 0.1569 0.1569
+	Kd 0.1569 0.1569 0.1569
+	Ks 0.8100 0.8100 0.8100
+	Ke 0.0000 0.0000 0.0000
+
+newmtl _SconceWallSconce_candle
+	Ns 53.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 1.0000 0.9490 0.7961
+	Kd 1.0000 0.9490 0.7961
+	Ks 0.1350 0.1350 0.1350
+	Ke 0.0000 0.0000 0.0000
+	map_Ka CandleDiff.jpg
+	map_Kd CandleDiff.jpg
