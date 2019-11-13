@@ -1,7 +1,7 @@
-# Blender MTL File: 'Gate.blend'
+# Blender MTL File: 'None'
 # Material Count: 2
 
-newmtl Material.002
+newmtl Material.006
 Ns 47.058824
 Ka 1.000000 1.000000 1.000000
 Kd 0.533333 0.533333 0.533333
@@ -12,7 +12,7 @@ d 1.000000
 illum 2
 map_Kd tex.jpg
 
-newmtl Material.003
+newmtl Material.007
 Ns 47.058824
 Ka 1.000000 1.000000 1.000000
 Kd 0.533333 0.533333 0.533333
