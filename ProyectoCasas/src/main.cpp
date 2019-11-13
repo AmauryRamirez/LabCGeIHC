@@ -76,7 +76,8 @@ Box boxWall;
 // Models complex instances
 Model modelPuerta1, modelPuerta2;
 
-GLuint IDtextureCarretera, IDtextuLuna, IDtextuParedTerror, IDtextuCesped, IDtextuCera, IDtextuReja;
+GLuint IDtextureCarretera, IDtextuLuna, IDtextuVenRot, IDtextuParedTerror, IDtextuCesped, IDtextuCera, IDtextuReja;
+GLuint IDtextuMantel;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -187,7 +188,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	// Método setter que colocar el apuntador al shader
 	sphere1.setShader(&shaderColorLighting);
 	//Setter para poner el color de la geometria
-	sphere1.setColor(glm::vec4(0.3, 0.3, 1.0, 1.0));
+	sphere1.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
 
 	// Inicializar los buffers VAO, VBO, EBO
 	sphere2.init();
@@ -225,7 +226,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	box1.init();
 	// Settea el shader a utilizar
 	box1.setShader(&shaderMulLighting);
-	box1.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
+	box1.setColor(glm::vec4(1.0, 1.0, 0.0, 0.2));
 
 	box2.init();
 	box2.setShader(&shaderMulLighting);
@@ -241,8 +242,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelPuerta1.loadModel("../models/Door/Puerta1.obj");
 	modelPuerta1.setShader(&shaderMulLighting);
 
-//	modelPuerta2.loadModel("../models/Door/Puerta2.obj");
-//	modelPuerta2.setShader(&shaderMulLighting);
+	modelPuerta2.loadModel("../models/Door/Puerta2.obj");
+	modelPuerta2.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.01, 0.0));
 
@@ -336,6 +337,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textuCesped.freeImage(bitmap);
 
 	/**************************************************************************************************************
+				TEXTURA - TERROR - VENTANAS
+	***************************************************************************************************************/
+	Texture textuVenRot("../Textures/VentanaRota.jpg");
+	bitmap = textuVenRot.loadImage(false);
+	data = textuVenRot.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuVenRot);
+	glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuVenRot.freeImage(bitmap);
+
+	/**************************************************************************************************************
 				TEXTURA - CERA
 	***************************************************************************************************************/
 	Texture textuCera("../Textures/Cera.jpg");
@@ -376,6 +398,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	else
 		std::cout << "Failed to load texture" << std::endl;
 	textuReja.freeImage(bitmap);
+
+	/**************************************************************************************************************
+				TEXTURA - MANTEL
+	***************************************************************************************************************/
+	Texture textuMantel("../Textures/Mantel.jpg");
+	bitmap = textuMantel.loadImage(false);
+	data = textuMantel.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuMantel);
+	glBindTexture(GL_TEXTURE_2D, IDtextuMantel);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuMantel.freeImage(bitmap);
 
 
 	// Carga de texturas para el skybox
@@ -519,7 +562,7 @@ void applicationLoop() {
 	float angle = 0.0;
 	float ratio = 100.0;
 
-
+	bool Pos0 = false;
 
 
 	while (psi) {
@@ -612,27 +655,180 @@ void applicationLoop() {
 		//shaderMulLighting.setFloat("spotLights[0].constant", 1.0); //
 		//shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
 		//shaderMulLighting.setFloat("spotLights[0].quadratic", 0.001);
-		/*
+		
 		// Esto es para la luces pointlights
 		//numero de luces a utilizar de tipo pointlihts = 3
-		shaderMulLighting.setInt("pointLightCount", 5); //agregar numero de luces sise ponen 5 tambien ir a multipleShader.fs en const int MAX_POINT_LIGHTS = 5;
+		shaderMulLighting.setInt("pointLightCount",20); //agregar numero de luces sise ponen 5 tambien ir a multipleShader.fs en const int MAX_POINT_LIGHTS = 5;
 
 		// posicion de la luz con indice 0
-		shaderMulLighting.setVectorFloat3("pointLights[0].position", glm::value_ptr((glm::vec3(-5.1, 4.5, -3.5)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[0].position", glm::value_ptr((glm::vec3(-0.25, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
 		//propiedades de la luz 0
 		shaderMulLighting.setVectorFloat3("pointLights[0].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
-		shaderMulLighting.setVectorFloat3("pointLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.0, 0.01, 0.0)));
-		shaderMulLighting.setVectorFloat3("pointLights[0].light.specular", glm::value_ptr(glm::vec3(0.0, 0.6, 0.0)));
-		shaderMulLighting.setFloat("pointLights[0].constant", 1.0);
-		shaderMulLighting.setFloat("pointLights[0].linear", 0.04);
-		shaderMulLighting.setFloat("pointLights[0].quadratic", 0.004);
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[0].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[0].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[0].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[0].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[1].position", glm::value_ptr((glm::vec3(-0.25, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[1].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[1].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[1].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[1].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[2].position", glm::value_ptr((glm::vec3(-0.35, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[2].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[2].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[2].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[2].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[3].position", glm::value_ptr((glm::vec3(-0.35, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[3].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[3].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[3].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[3].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[4].position", glm::value_ptr((glm::vec3(-0.45, 0.0015, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[4].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[4].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[4].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[4].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[5].position", glm::value_ptr((glm::vec3(-0.45, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[5].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[5].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[5].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[5].quadratic", 0.001);
+
+
+		shaderMulLighting.setVectorFloat3("pointLights[6].position", glm::value_ptr((glm::vec3(-0.55, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[6].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[6].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[6].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[6].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[7].position", glm::value_ptr((glm::vec3(-0.55, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[7].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[7].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[7].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[7].quadratic", 0.001);
+	
+		shaderMulLighting.setVectorFloat3("pointLights[8].position", glm::value_ptr((glm::vec3(-0.65, 0.0015, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[8].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[8].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[8].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[8].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[9].position", glm::value_ptr((glm::vec3(-0.65, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[9].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[9].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[9].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[9].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[10].position", glm::value_ptr((glm::vec3(-0.75, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[10].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[10].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[10].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[10].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[11].position", glm::value_ptr((glm::vec3(-0.75, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[11].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[11].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[11].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[11].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[12].position", glm::value_ptr((glm::vec3(-0.85, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[12].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[12].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[12].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[12].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[13].position", glm::value_ptr((glm::vec3(-0.85, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[13].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[13].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[13].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[13].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[14].position", glm::value_ptr((glm::vec3(-0.95, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[14].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[14].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[14].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[14].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[15].position", glm::value_ptr((glm::vec3(-0.95, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[15].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[15].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[15].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[15].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[16].position", glm::value_ptr((glm::vec3(-1.05, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[16].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[16].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[16].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[16].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[17].position", glm::value_ptr((glm::vec3(-1.05, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[17].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[17].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[17].linear", 0.01);
+		shaderMulLighting.setFloat("pointLights[17].quadratic", 0.001);
+
+		shaderMulLighting.setVectorFloat3("pointLights[18].position", glm::value_ptr((glm::vec3(-1.15, 0.0045, -0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[18].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[18].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[18].linear", 0.05);
+		shaderMulLighting.setFloat("pointLights[18].quadratic", 0.005);
+
+		shaderMulLighting.setVectorFloat3("pointLights[19].position", glm::value_ptr((glm::vec3(-1.15, 0.0045, 0.075)))); // debe ser igual a sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.ambient", glm::value_ptr(glm::vec3(0.001, 0.001, 0.001)));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.diffuse", glm::value_ptr(glm::vec3(0.01, 0.01, 0.0)));
+		shaderMulLighting.setVectorFloat3("pointLights[19].light.specular", glm::value_ptr(glm::vec3(0.1, 0.1, 0.0)));
+		shaderMulLighting.setFloat("pointLights[19].constant", 2.0);
+		shaderMulLighting.setFloat("pointLights[19].linear", 0.05);
+		shaderMulLighting.setFloat("pointLights[19].quadratic", 0.005);
+
 
 		//ESTO ES PARA COLOCAR LAS ESFERAS DE LAS LUCES
-		sphereLamp.setScale(glm::vec3(0.1, 0.1, 0.2));
-		sphereLamp.setPosition(glm::vec3(-5.1, 4.5, -3.5));
-		sphereLamp.setColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
+		/*sphereLamp.setScale(glm::vec3(0.0007, 0.0015, 0.0007));
+		sphereLamp.setPosition(glm::vec3(-0.25, 0.0045, -0.075));
+		sphereLamp.setColor(glm::vec4(0.01, 0.01, 0.0, 1.0));
 		sphereLamp.render();*/
-
 
 
 		glm::mat4 lightModelmatrix = glm::rotate(glm::mat4(1.0f), angle,
@@ -900,20 +1096,115 @@ void applicationLoop() {
 		box1.render(ParedCasaTA10);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		glm::mat4 ParedCasaTA11 = glm::mat4(1.0);
+		ParedCasaTA11 = glm::translate(ParedCasaTA11, glm::vec3(-1.7, 0.4025, 0.0));
+		ParedCasaTA11 = glm::scale(ParedCasaTA11, glm::vec3(0.9, 0.005, 0.3));
+		glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+		box1.render(ParedCasaTA11);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		//OFRENDA
+			glm::mat4 matMesa = glm::mat4(1.0);
+			matMesa = glm::translate(matMesa, glm::vec3(-2.075, 0.0225, 0.0)); //-2.75, 0.045, 0.0
+			matMesa = glm::scale(matMesa, glm::vec3(0.15, 0.005, 0.2));
+			glBindTexture(GL_TEXTURE_2D, IDtextuMantel);
+			box1.render(matMesa);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 matPata0 = glm::mat4(1.0);
+			matPata0 = glm::translate(matPata0, glm::vec3(-2.075, 0.01, 0.075));
+			matPata0 = glm::scale(matPata0, glm::vec3(0.14, 0.02, 0.006));
+			glBindTexture(GL_TEXTURE_2D, IDtextuMantel);
+			box1.render(matPata0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 matPata1 = glm::mat4(1.0);
+			matPata1 = glm::translate(matPata1, glm::vec3(-2.075, 0.01, -0.075));
+			matPata1 = glm::scale(matPata1, glm::vec3(0.14, 0.02, 0.006));
+			glBindTexture(GL_TEXTURE_2D, IDtextuMantel);
+			box1.render(matPata1);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 matPata2 = glm::mat4(1.0);
+			matPata2 = glm::translate(matPata2, glm::vec3(-2.015, 0.01, 0.0));
+			matPata2 = glm::scale(matPata2, glm::vec3(0.006, 0.02, 0.16));
+			glBindTexture(GL_TEXTURE_2D, IDtextuMantel);
+			box1.render(matPata2);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+
+		//VENTANAS
+		glm::mat4 matVenta1 = glm::mat4(1.0);
+		matVenta1 = glm::translate(matVenta1, glm::vec3(-1.405, 0.2, -0.145));
+		matVenta1 = glm::scale(matVenta1, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta2 = glm::mat4(1.0);
+		matVenta2 = glm::translate(matVenta2, glm::vec3(-1.6, 0.2, -0.145));
+		matVenta2 = glm::scale(matVenta2, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta2);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta3 = glm::mat4(1.0);
+		matVenta3 = glm::translate(matVenta3, glm::vec3(-1.8, 0.2, -0.145));
+		matVenta3 = glm::scale(matVenta3, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta3);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta4 = glm::mat4(1.0);
+		matVenta4 = glm::translate(matVenta4, glm::vec3(-2.0, 0.2, -0.145));
+		matVenta4 = glm::scale(matVenta4, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta4);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta5 = glm::mat4(1.0);
+		matVenta5 = glm::translate(matVenta5, glm::vec3(-1.405, 0.2, 0.145));
+		matVenta5 = glm::scale(matVenta5, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta5);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta6 = glm::mat4(1.0);
+		matVenta6 = glm::translate(matVenta6, glm::vec3(-1.6, 0.2, 0.145));
+		matVenta6 = glm::scale(matVenta6, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta6);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta7 = glm::mat4(1.0);
+		matVenta7 = glm::translate(matVenta7, glm::vec3(-1.8, 0.2, 0.145));
+		matVenta7 = glm::scale(matVenta7, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta7);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 matVenta8 = glm::mat4(1.0);
+		matVenta8 = glm::translate(matVenta8, glm::vec3(-2.0, 0.2, 0.145));
+		matVenta8 = glm::scale(matVenta8, glm::vec3(0.12, 0.2, 0.005));
+		glBindTexture(GL_TEXTURE_2D, IDtextuVenRot);
+		box1.render(matVenta8);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+
 		//PUERTA
 				glm::mat4 matDoor1 = glm::mat4(1.0);
-				//matDoor1 = glm::rotate(matDoor1, glm::radians(90.0f),glm::vec3(1.0,0.0,0.0));
-				matDoor1 = glm::translate(matDoor1, glm::vec3(-1.255, 0.0, 0.0));
-				//matDoor1 = glm::scale(matDoor1, glm::vec3(0.4, 0.465, 0.39));
+				matDoor1 = glm::rotate(matDoor1, glm::radians(90.0f),glm::vec3(0.0,1.0,0.0));
+				matDoor1 = glm::translate(matDoor1, glm::vec3(0.0, 0.0, -1.255));
+				matDoor1 = glm::scale(matDoor1, glm::vec3(0.48, 0.39, 0.4));
 				modelPuerta1.render(matDoor1);
 				glActiveTexture(GL_TEXTURE0);
 
-				/*glm::mat4 matDoor2 = glm::mat4(1.0);
-				matDoor2 = glm::rotate(matDoor2, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-				matDoor2 = glm::translate(matDoor2, glm::vec3(-1.255, 0.0, 0.0));
-				matDoor2 = glm::scale(matDoor2, glm::vec3(0.4, 0.465, 0.39));
+				glm::mat4 matDoor2 = glm::mat4(1.0);
+				matDoor2 = glm::rotate(matDoor2, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+				matDoor2 = glm::translate(matDoor2, glm::vec3(0.0, 0.0, -1.255));
+				matDoor2 = glm::scale(matDoor2, glm::vec3(0.48, 0.39, 0.4));
 				modelPuerta2.render(matDoor2);
-				glActiveTexture(GL_TEXTURE0);*/
+				glActiveTexture(GL_TEXTURE0);
 
 		//CESPED
 		glm::mat4 matCesped = glm::mat4(1.0);
@@ -936,12 +1227,22 @@ void applicationLoop() {
 					cylinder1.render(matVela);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama = glm::mat4(1.0);
+						llama = glm::translate(llama, glm::vec3(-0.25, 0.0045, -0.075));
+						llama = glm::scale(llama, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama);
+
 					glm::mat4 matVela1 = glm::mat4(1.0);
 					matVela1 = glm::translate(matVela1, glm::vec3(-0.25, 0.0015, 0.075)); //-0.25, 0.0, -0.075
 					matVela1 = glm::scale(matVela1, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela1);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama1 = glm::mat4(1.0);
+						llama1 = glm::translate(llama1, glm::vec3(-0.25, 0.0045, 0.075));
+						llama1 = glm::scale(llama1, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama1);
 
 					glm::mat4 matVela2 = glm::mat4(1.0);
 					matVela2 = glm::translate(matVela2, glm::vec3(-0.35, 0.0015, 0.075));
@@ -950,12 +1251,23 @@ void applicationLoop() {
 					cylinder1.render(matVela2);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama2 = glm::mat4(1.0);
+						llama2 = glm::translate(llama2, glm::vec3(-0.35, 0.0045, 0.075));
+						llama2 = glm::scale(llama2, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama2);
+
+
 					glm::mat4 matVela3 = glm::mat4(1.0);
 					matVela3 = glm::translate(matVela3, glm::vec3(-0.35, 0.0015, -0.075));
 					matVela3 = glm::scale(matVela3, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela3);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama3 = glm::mat4(1.0);
+						llama3 = glm::translate(llama3, glm::vec3(-0.35, 0.0045, -0.075));
+						llama3 = glm::scale(llama3, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama3);
 
 					glm::mat4 matVela4 = glm::mat4(1.0);
 					matVela4 = glm::translate(matVela4, glm::vec3(-0.45, 0.0015, -0.075));
@@ -964,6 +1276,11 @@ void applicationLoop() {
 					cylinder1.render(matVela4);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama4 = glm::mat4(1.0);
+						llama4 = glm::translate(llama4, glm::vec3(-0.45, 0.0045, -0.075));
+						llama4 = glm::scale(llama4, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama4);
+
 					glm::mat4 matVela5 = glm::mat4(1.0);
 					matVela5 = glm::translate(matVela5, glm::vec3(-0.45, 0.0015, 0.075));
 					matVela5 = glm::scale(matVela5, glm::vec3(0.002, 0.005, 0.002));
@@ -971,12 +1288,22 @@ void applicationLoop() {
 					cylinder1.render(matVela5);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama5 = glm::mat4(1.0);
+						llama5 = glm::translate(llama5, glm::vec3(-0.45, 0.0045, 0.075));
+						llama5 = glm::scale(llama5, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama5);
+
 					glm::mat4 matVela6 = glm::mat4(1.0);
 					matVela6 = glm::translate(matVela6, glm::vec3(-0.55, 0.0015, 0.075));
 					matVela6 = glm::scale(matVela6, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela6);
 					glBindTexture(GL_TEXTURE_2D, 0);
+					
+						glm::mat4 llama6 = glm::mat4(1.0);
+						llama6 = glm::translate(llama6, glm::vec3(-0.55, 0.0045, 0.075));
+						llama6 = glm::scale(llama6, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama6);
 
 					glm::mat4 matVela7 = glm::mat4(1.0);
 					matVela7 = glm::translate(matVela7, glm::vec3(-0.55, 0.0015, -0.075));
@@ -985,12 +1312,22 @@ void applicationLoop() {
 					cylinder1.render(matVela7);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama7 = glm::mat4(1.0);
+						llama7 = glm::translate(llama7, glm::vec3(-0.55, 0.0045, -0.075));
+						llama7 = glm::scale(llama7, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama7);
+
 					glm::mat4 matVela8 = glm::mat4(1.0);
 					matVela8 = glm::translate(matVela8, glm::vec3(-0.65, 0.0015, -0.075));
 					matVela8 = glm::scale(matVela8, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela8);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama8 = glm::mat4(1.0);
+						llama8 = glm::translate(llama8, glm::vec3(-0.65, 0.0045, -0.075));
+						llama8 = glm::scale(llama8, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama8);
 
 					glm::mat4 matVela9 = glm::mat4(1.0);
 					matVela9 = glm::translate(matVela9, glm::vec3(-0.65, 0.0015, 0.075));
@@ -999,12 +1336,22 @@ void applicationLoop() {
 					cylinder1.render(matVela9);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama9 = glm::mat4(1.0);
+						llama9 = glm::translate(llama9, glm::vec3(-0.65, 0.0045, 0.075));
+						llama9 = glm::scale(llama9, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama9);
+
 					glm::mat4 matVela10 = glm::mat4(1.0);
 					matVela10 = glm::translate(matVela10, glm::vec3(-0.75, 0.0015, 0.075));
 					matVela10 = glm::scale(matVela10, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela10);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama10 = glm::mat4(1.0);
+						llama10 = glm::translate(llama10, glm::vec3(-0.75, 0.0045, 0.075));
+						llama10 = glm::scale(llama10, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama10);
 
 					glm::mat4 matVela11 = glm::mat4(1.0);
 					matVela11 = glm::translate(matVela11, glm::vec3(-0.75, 0.0015, -0.075));
@@ -1013,12 +1360,22 @@ void applicationLoop() {
 					cylinder1.render(matVela11);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama11 = glm::mat4(1.0);
+						llama11 = glm::translate(llama11, glm::vec3(-0.75, 0.0045, -0.075));
+						llama11 = glm::scale(llama11, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama11);
+
 					glm::mat4 matVela12 = glm::mat4(1.0);
 					matVela12 = glm::translate(matVela12, glm::vec3(-0.85, 0.0015, -0.075));
 					matVela12 = glm::scale(matVela12, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela12);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama12 = glm::mat4(1.0);
+						llama12 = glm::translate(llama12, glm::vec3(-0.85, 0.0045, -0.075));
+						llama12 = glm::scale(llama12, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama12);
 
 					glm::mat4 matVela13 = glm::mat4(1.0);
 					matVela13 = glm::translate(matVela13, glm::vec3(-0.85, 0.0015, 0.075));
@@ -1027,12 +1384,23 @@ void applicationLoop() {
 					cylinder1.render(matVela13);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama13 = glm::mat4(1.0);
+						llama13 = glm::translate(llama13, glm::vec3(-0.85, 0.0045, 0.075));
+						llama13 = glm::scale(llama13, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama13);
+
 					glm::mat4 matVela14 = glm::mat4(1.0);
 					matVela14 = glm::translate(matVela14, glm::vec3(-0.95, 0.0015, 0.075));
 					matVela14 = glm::scale(matVela14, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela14);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama14 = glm::mat4(1.0);
+						llama14 = glm::translate(llama14, glm::vec3(-0.95, 0.0045, 0.075));
+						llama14 = glm::scale(llama14, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama14);
+
 
 					glm::mat4 matVela15 = glm::mat4(1.0);
 					matVela15 = glm::translate(matVela15, glm::vec3(-0.95, 0.0015, -0.075));
@@ -1041,12 +1409,24 @@ void applicationLoop() {
 					cylinder1.render(matVela15);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama15 = glm::mat4(1.0);
+						llama15 = glm::translate(llama15, glm::vec3(-0.95, 0.0045, -0.075));
+						llama15 = glm::scale(llama15, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama15);
+
+
 					glm::mat4 matVela16 = glm::mat4(1.0);
 					matVela16 = glm::translate(matVela16, glm::vec3(-1.05, 0.0015, -0.075));
 					matVela16 = glm::scale(matVela16, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela16);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama16 = glm::mat4(1.0);
+						llama16 = glm::translate(llama16, glm::vec3(-1.05, 0.0045, -0.075));
+						llama16 = glm::scale(llama16, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama16);
+
 
 					glm::mat4 matVela17 = glm::mat4(1.0);
 					matVela17 = glm::translate(matVela17, glm::vec3(-1.05, 0.0015, 0.075));
@@ -1055,6 +1435,11 @@ void applicationLoop() {
 					cylinder1.render(matVela17);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama17 = glm::mat4(1.0);
+						llama17 = glm::translate(llama17, glm::vec3(-1.05, 0.0045, 0.075));
+						llama17 = glm::scale(llama17, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama17);
+
 					glm::mat4 matVela18 = glm::mat4(1.0);
 					matVela18 = glm::translate(matVela18, glm::vec3(-1.15, 0.0015, 0.075));
 					matVela18 = glm::scale(matVela18, glm::vec3(0.002, 0.005, 0.002));
@@ -1062,12 +1447,22 @@ void applicationLoop() {
 					cylinder1.render(matVela18);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
+						glm::mat4 llama18 = glm::mat4(1.0);
+						llama18 = glm::translate(llama18, glm::vec3(-1.15, 0.0045, 0.075));
+						llama18 = glm::scale(llama18, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama18);
+
 					glm::mat4 matVela19 = glm::mat4(1.0);
 					matVela19 = glm::translate(matVela19, glm::vec3(-1.15, 0.0015, -0.075));
 					matVela19 = glm::scale(matVela19, glm::vec3(0.002, 0.005, 0.002));
 					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
 					cylinder1.render(matVela19);
 					glBindTexture(GL_TEXTURE_2D, 0);
+
+						glm::mat4 llama19 = glm::mat4(1.0);
+						llama19 = glm::translate(llama19, glm::vec3(-1.15, 0.0045, -0.075));
+						llama19 = glm::scale(llama19, glm::vec3(0.0007, 0.0015, 0.0007));
+						sphere1.render(llama19);
 
 			/*****************************************************************************************
 				CASA - TERROR - CERCA
