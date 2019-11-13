@@ -74,9 +74,9 @@ Box box3;
 Box boxCesped;
 Box boxWall;
 // Models complex instances
-Model modelVela;
+Model modelPuerta1, modelPuerta2;
 
-GLuint IDtextureCarretera, IDtextuLuna, IDtextuParedTerror, IDtextuCesped;
+GLuint IDtextureCarretera, IDtextuLuna, IDtextuParedTerror, IDtextuCesped, IDtextuCera, IDtextuReja;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -204,8 +204,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	sphereLamp.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
 
 	cylinder1.init();
-	cylinder1.setShader(&shaderColorLighting);
-	cylinder1.setColor(glm::vec4(0.3, 0.3, 1.0, 1.0));
+	cylinder1.setShader(&shaderMulLighting);
+	//cylinder1.setColor(glm::vec4(0.3, 0.3, 1.0, 1.0));
 
 	cylinder2.init();
 	cylinder2.setShader(&shaderMulLighting);
@@ -229,22 +229,20 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	box2.init();
 	box2.setShader(&shaderMulLighting);
+	box2.setColor(glm::vec4(1.0, 1.0, 0.0, 0.1));
+
 
 	sphere3.init();
 	sphere3.setShader(&shaderMulLighting);
 
 	box3.init();
 	box3.setShader(&shaderMulLighting);
+	
+	modelPuerta1.loadModel("../models/Door/Puerta1.obj");
+	modelPuerta1.setShader(&shaderMulLighting);
 
-	boxCesped.init();
-	boxCesped.setShader(&shaderMulLighting);
-
-	boxWall.init();
-	boxWall.setShader(&shaderMulLighting);
-
-	modelVela.loadModel("../models/Vela/Vela1.obj");
-	modelVela.setShader(&shaderMulLighting);
-
+//	modelPuerta2.loadModel("../models/Door/Puerta2.obj");
+//	modelPuerta2.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.01, 0.0));
 
@@ -337,7 +335,47 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	textuCesped.freeImage(bitmap);
 
+	/**************************************************************************************************************
+				TEXTURA - CERA
+	***************************************************************************************************************/
+	Texture textuCera("../Textures/Cera.jpg");
+	bitmap = textuCera.loadImage(false);
+	data = textuCera.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuCera);
+	glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuCera.freeImage(bitmap);
 
+	/**************************************************************************************************************
+				TEXTURA - CERCA
+	***************************************************************************************************************/
+	Texture textuReja("../Textures/malla1.png");
+	bitmap = textuReja.loadImage(false);
+	data = textuReja.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuReja);
+	glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuReja.freeImage(bitmap);
 
 
 	// Carga de texturas para el skybox
@@ -477,8 +515,6 @@ bool processInput(bool continueApplication) {
 void applicationLoop() {
 	bool psi = true;
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0, 1.5, 0.0));
 	float offX = 0.0;
 	float angle = 0.0;
 	float ratio = 100.0;
@@ -564,18 +600,18 @@ void applicationLoop() {
 		shaderMulLighting.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(-1.0, 0.0, 0.0)));
 
 		// Esto es para la luz spotlight
-		shaderMulLighting.setInt("spotLightCount", 1);
-		shaderMulLighting.setVectorFloat3("spotLights[0].position", glm::value_ptr(camera->getPosition()));
-		shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(camera->getFront()));
+		//shaderMulLighting.setInt("spotLightCount", 1);
+		//shaderMulLighting.setVectorFloat3("spotLights[0].position", glm::value_ptr(camera->getPosition()));
+		//shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(camera->getFront()));
 		//Propiedades de la luz verde
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.01, 0.01, 0.01)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.4, 0.4)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.6, 0.6, 0.6)));
-		shaderMulLighting.setFloat("spotLights[0].cutOff", cos(glm::radians(12.5)));
-		shaderMulLighting.setFloat("spotLights[0].outerCutOff", cos(glm::radians(15.0)));
-		shaderMulLighting.setFloat("spotLights[0].constant", 1.0); //
-		shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
-		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.001);
+		//shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.01, 0.01, 0.01)));
+		//shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.4, 0.4)));
+		//shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.6, 0.6, 0.6)));
+		//shaderMulLighting.setFloat("spotLights[0].cutOff", cos(glm::radians(12.5)));
+		//shaderMulLighting.setFloat("spotLights[0].outerCutOff", cos(glm::radians(15.0)));
+		//shaderMulLighting.setFloat("spotLights[0].constant", 1.0); //
+		//shaderMulLighting.setFloat("spotLights[0].linear", 0.1);
+		//shaderMulLighting.setFloat("spotLights[0].quadratic", 0.001);
 		/*
 		// Esto es para la luces pointlights
 		//numero de luces a utilizar de tipo pointlihts = 3
@@ -635,7 +671,7 @@ void applicationLoop() {
 		******************************************************************************************/
 		glm::mat4 matCalle = glm::mat4(1.0);
 		matCalle = glm::translate(matCalle, glm::vec3(0.0, 0.0, 0.0));
-		matCalle = glm::scale(matCalle, glm::vec3(0.2, 0.01, 2.0));
+		matCalle = glm::scale(matCalle, glm::vec3(0.2, 0.0025, 2.0));
 		glBindTexture(GL_TEXTURE_2D, IDtextureCarretera);
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		box1.render(matCalle);
@@ -645,33 +681,96 @@ void applicationLoop() {
 			CASA - TERROR
 		******************************************************************************************/
 		//PAREDES FACHADA
-		glm::mat4 ParedTorreC1 = glm::mat4(1.0);
-		ParedTorreC1 = glm::translate(ParedTorreC1, glm::vec3(-1.205, 0.3, 0.2)); //-1.1, 7.5, 0.35
-		ParedTorreC1 = glm::scale(ParedTorreC1, glm::vec3(0.01, 0.6, 0.1)); //0.3, 0.75, 0.3
-		glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
-		box1.render(ParedTorreC1);
-		glBindTexture(GL_TEXTURE_2D, 0);
+			glm::mat4 ParedTorreC1 = glm::mat4(1.0);
+			ParedTorreC1 = glm::translate(ParedTorreC1, glm::vec3(-1.205, 0.3, 0.2)); //-1.1, 7.5, 0.35
+			ParedTorreC1 = glm::scale(ParedTorreC1, glm::vec3(0.01, 0.6, 0.1)); //0.3, 0.75, 0.3
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedTorreC1);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 ParedTorreC2 = glm::mat4(1.0);
-		ParedTorreC2 = glm::translate(ParedTorreC2, glm::vec3(-1.25, 0.3, 0.245)); //-1.1, 7.5, 0.35
-		ParedTorreC2 = glm::scale(ParedTorreC2, glm::vec3(0.08, 0.6, 0.01)); //0.3, 0.75, 0.3
-		glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
-		box1.render(ParedTorreC2);
-		glBindTexture(GL_TEXTURE_2D, 0);
+			glm::mat4 ParedTorreC2 = glm::mat4(1.0);
+			ParedTorreC2 = glm::translate(ParedTorreC2, glm::vec3(-1.25, 0.3, 0.245)); //-1.1, 7.5, 0.35
+			ParedTorreC2 = glm::scale(ParedTorreC2, glm::vec3(0.08, 0.6, 0.01)); //0.3, 0.75, 0.3
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedTorreC2);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 ParedTorreC3 = glm::mat4(1.0);
-		ParedTorreC3 = glm::translate(ParedTorreC3, glm::vec3(-1.295, 0.3, 0.2)); //-1.1, 7.5, 0.35
-		ParedTorreC3 = glm::scale(ParedTorreC3, glm::vec3(0.01, 0.6, 0.1)); //0.3, 0.75, 0.3
-		glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
-		box1.render(ParedTorreC3);
-		glBindTexture(GL_TEXTURE_2D, 0);
+			glm::mat4 ParedTorreC3 = glm::mat4(1.0);
+			ParedTorreC3 = glm::translate(ParedTorreC3, glm::vec3(-1.295, 0.3, 0.2)); //-1.1, 7.5, 0.35
+			ParedTorreC3 = glm::scale(ParedTorreC3, glm::vec3(0.01, 0.6, 0.1)); //0.3, 0.75, 0.3
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedTorreC3);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 ParedTorreC4 = glm::mat4(1.0);
-		ParedTorreC4 = glm::translate(ParedTorreC4, glm::vec3(-1.25, 0.3, 0.155)); //-1.1, 7.5, 0.35
-		ParedTorreC4 = glm::scale(ParedTorreC4, glm::vec3(0.08, 0.6, 0.01)); //0.3, 0.75, 0.3
-		glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
-		box1.render(ParedTorreC4);
-		glBindTexture(GL_TEXTURE_2D, 0);
+			glm::mat4 ParedTorreC4 = glm::mat4(1.0);
+			ParedTorreC4 = glm::translate(ParedTorreC4, glm::vec3(-1.25, 0.3, 0.155)); //-1.1, 7.5, 0.35
+			ParedTorreC4 = glm::scale(ParedTorreC4, glm::vec3(0.08, 0.6, 0.01)); //0.3, 0.75, 0.3
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedTorreC4);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre1 = glm::mat4(1.0);
+			ParedCuboTorre1 = glm::translate(ParedCuboTorre1, glm::vec3(-1.185,0.66,0.2));
+			ParedCuboTorre1 = glm::scale(ParedCuboTorre1, glm::vec3(0.01,0.12,0.14));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre1);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre2 = glm::mat4(1.0);
+			ParedCuboTorre2 = glm::translate(ParedCuboTorre2, glm::vec3(-1.25, 0.66, 0.135));
+			ParedCuboTorre2 = glm::scale(ParedCuboTorre2, glm::vec3(0.12, 0.12, 0.01));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre2);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre3 = glm::mat4(1.0);
+			ParedCuboTorre3 = glm::translate(ParedCuboTorre3, glm::vec3(-1.315, 0.66, 0.2));
+			ParedCuboTorre3 = glm::scale(ParedCuboTorre3, glm::vec3(0.01, 0.12, 0.14));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre3);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre4 = glm::mat4(1.0);
+			ParedCuboTorre4 = glm::translate(ParedCuboTorre4, glm::vec3(-1.25, 0.66, 0.265));
+			ParedCuboTorre4 = glm::scale(ParedCuboTorre4, glm::vec3(0.12, 0.12, 0.01));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre4);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre5 = glm::mat4(1.0);
+			ParedCuboTorre5 = glm::translate(ParedCuboTorre5, glm::vec3(-1.25, 0.715, 0.2));
+			ParedCuboTorre5 = glm::scale(ParedCuboTorre5, glm::vec3(0.12, 0.01, 0.12));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre5);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre6 = glm::mat4(1.0);
+			ParedCuboTorre6 = glm::translate(ParedCuboTorre6, glm::vec3(-1.25, 0.6, 0.145));
+			ParedCuboTorre6 = glm::scale(ParedCuboTorre6, glm::vec3(0.12, 0.01, 0.01));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre6);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			
+			glm::mat4 ParedCuboTorre7 = glm::mat4(1.0);
+			ParedCuboTorre7 = glm::translate(ParedCuboTorre7, glm::vec3(-1.25, 0.6, 0.255));
+			ParedCuboTorre7 = glm::scale(ParedCuboTorre7, glm::vec3(0.12, 0.01, 0.01));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre7);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre8 = glm::mat4(1.0);
+			ParedCuboTorre8 = glm::translate(ParedCuboTorre8, glm::vec3(-1.195, 0.605, 0.2));
+			ParedCuboTorre8 = glm::scale(ParedCuboTorre8, glm::vec3(0.01, 0.01, 0.12));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre8);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glm::mat4 ParedCuboTorre9 = glm::mat4(1.0);
+			ParedCuboTorre9 = glm::translate(ParedCuboTorre9, glm::vec3(-1.305, 0.605, 0.2));
+			ParedCuboTorre9 = glm::scale(ParedCuboTorre9, glm::vec3(0.01, 0.01, 0.12));
+			glBindTexture(GL_TEXTURE_2D, IDtextuParedTerror);
+			box1.render(ParedCuboTorre9);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 		//PAREDES CASA GRANDE
 		glm::mat4 ParedCasaT0 = glm::mat4(1.0);
@@ -801,6 +900,20 @@ void applicationLoop() {
 		box1.render(ParedCasaTA10);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		//PUERTA
+				glm::mat4 matDoor1 = glm::mat4(1.0);
+				//matDoor1 = glm::rotate(matDoor1, glm::radians(90.0f),glm::vec3(1.0,0.0,0.0));
+				matDoor1 = glm::translate(matDoor1, glm::vec3(-1.255, 0.0, 0.0));
+				//matDoor1 = glm::scale(matDoor1, glm::vec3(0.4, 0.465, 0.39));
+				modelPuerta1.render(matDoor1);
+				glActiveTexture(GL_TEXTURE0);
+
+				/*glm::mat4 matDoor2 = glm::mat4(1.0);
+				matDoor2 = glm::rotate(matDoor2, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+				matDoor2 = glm::translate(matDoor2, glm::vec3(-1.255, 0.0, 0.0));
+				matDoor2 = glm::scale(matDoor2, glm::vec3(0.4, 0.465, 0.39));
+				modelPuerta2.render(matDoor2);
+				glActiveTexture(GL_TEXTURE0);*/
 
 		//CESPED
 		glm::mat4 matCesped = glm::mat4(1.0);
@@ -812,46 +925,193 @@ void applicationLoop() {
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela = glm::mat4(1.0);
-		matVela = glm::translate(matVela, glm::vec3(0.0, 0.0, 0.0)); //-0.25, 0.0, -0.075
-		modelVela.render(matVela);
-		/*
-		glm::mat4 matVela2 = glm::mat4(1.0);
-		matVela2 = glm::translate(matVela2, glm::vec3(-0.35, 0.0, 0.075));
-		modelVela.render(matVela2);
+		/*****************************************************************************************
+			CASA - TERROR - VELAS
+		******************************************************************************************/
 
-		glm::mat4 matVela4 = glm::mat4(1.0);
-		matVela4 = glm::translate(matVela4, glm::vec3(-0.45, 0.0, -0.075));
-		modelVela.render(matVela4);
+					glm::mat4 matVela = glm::mat4(1.0);
+					matVela = glm::translate(matVela, glm::vec3(-0.25, 0.0015, -0.075)); //-0.25, 0.0, -0.075
+					matVela = glm::scale(matVela, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela6 = glm::mat4(1.0);
-		matVela6 = glm::translate(matVela6, glm::vec3(-0.55, 0.0, 0.075));
-		modelVela.render(matVela6);
+					glm::mat4 matVela1 = glm::mat4(1.0);
+					matVela1 = glm::translate(matVela1, glm::vec3(-0.25, 0.0015, 0.075)); //-0.25, 0.0, -0.075
+					matVela1 = glm::scale(matVela1, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela1);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela8 = glm::mat4(1.0);
-		matVela8 = glm::translate(matVela8, glm::vec3(-0.65, 0.0, -0.075));
-		modelVela.render(matVela8);
+					glm::mat4 matVela2 = glm::mat4(1.0);
+					matVela2 = glm::translate(matVela2, glm::vec3(-0.35, 0.0015, 0.075));
+					matVela2 = glm::scale(matVela2, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela2);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela10 = glm::mat4(1.0);
-		matVela10 = glm::translate(matVela10, glm::vec3(-0.75, 0.0, 0.075));
-		modelVela.render(matVela10);
+					glm::mat4 matVela3 = glm::mat4(1.0);
+					matVela3 = glm::translate(matVela3, glm::vec3(-0.35, 0.0015, -0.075));
+					matVela3 = glm::scale(matVela3, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela3);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela12 = glm::mat4(1.0);
-		matVela12 = glm::translate(matVela12, glm::vec3(-0.85, 0.0, -0.075));
-		modelVela.render(matVela12);
+					glm::mat4 matVela4 = glm::mat4(1.0);
+					matVela4 = glm::translate(matVela4, glm::vec3(-0.45, 0.0015, -0.075));
+					matVela4 = glm::scale(matVela4, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela4);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela14 = glm::mat4(1.0);
-		matVela14 = glm::translate(matVela14, glm::vec3(-0.95, 0.0, 0.075));
-		modelVela.render(matVela14);
+					glm::mat4 matVela5 = glm::mat4(1.0);
+					matVela5 = glm::translate(matVela5, glm::vec3(-0.45, 0.0015, 0.075));
+					matVela5 = glm::scale(matVela5, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela5);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela16 = glm::mat4(1.0);
-		matVela16 = glm::translate(matVela16, glm::vec3(-1.05, 0.0, -0.075));
-		modelVela.render(matVela16);
+					glm::mat4 matVela6 = glm::mat4(1.0);
+					matVela6 = glm::translate(matVela6, glm::vec3(-0.55, 0.0015, 0.075));
+					matVela6 = glm::scale(matVela6, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela6);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
-		glm::mat4 matVela18 = glm::mat4(1.0);
-		matVela18 = glm::translate(matVela18, glm::vec3(-1.15, 0.0, 0.075));
-		modelVela.render(matVela18);
-		*/
+					glm::mat4 matVela7 = glm::mat4(1.0);
+					matVela7 = glm::translate(matVela7, glm::vec3(-0.55, 0.0015, -0.075));
+					matVela7 = glm::scale(matVela7, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela7);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela8 = glm::mat4(1.0);
+					matVela8 = glm::translate(matVela8, glm::vec3(-0.65, 0.0015, -0.075));
+					matVela8 = glm::scale(matVela8, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela8);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela9 = glm::mat4(1.0);
+					matVela9 = glm::translate(matVela9, glm::vec3(-0.65, 0.0015, 0.075));
+					matVela9 = glm::scale(matVela9, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela9);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela10 = glm::mat4(1.0);
+					matVela10 = glm::translate(matVela10, glm::vec3(-0.75, 0.0015, 0.075));
+					matVela10 = glm::scale(matVela10, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela10);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela11 = glm::mat4(1.0);
+					matVela11 = glm::translate(matVela11, glm::vec3(-0.75, 0.0015, -0.075));
+					matVela11 = glm::scale(matVela11, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela11);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela12 = glm::mat4(1.0);
+					matVela12 = glm::translate(matVela12, glm::vec3(-0.85, 0.0015, -0.075));
+					matVela12 = glm::scale(matVela12, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela12);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela13 = glm::mat4(1.0);
+					matVela13 = glm::translate(matVela13, glm::vec3(-0.85, 0.0015, 0.075));
+					matVela13 = glm::scale(matVela13, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela13);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela14 = glm::mat4(1.0);
+					matVela14 = glm::translate(matVela14, glm::vec3(-0.95, 0.0015, 0.075));
+					matVela14 = glm::scale(matVela14, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela14);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela15 = glm::mat4(1.0);
+					matVela15 = glm::translate(matVela15, glm::vec3(-0.95, 0.0015, -0.075));
+					matVela15 = glm::scale(matVela15, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela15);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela16 = glm::mat4(1.0);
+					matVela16 = glm::translate(matVela16, glm::vec3(-1.05, 0.0015, -0.075));
+					matVela16 = glm::scale(matVela16, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela16);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela17 = glm::mat4(1.0);
+					matVela17 = glm::translate(matVela17, glm::vec3(-1.05, 0.0015, 0.075));
+					matVela17 = glm::scale(matVela17, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela17);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela18 = glm::mat4(1.0);
+					matVela18 = glm::translate(matVela18, glm::vec3(-1.15, 0.0015, 0.075));
+					matVela18 = glm::scale(matVela18, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela18);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 matVela19 = glm::mat4(1.0);
+					matVela19 = glm::translate(matVela19, glm::vec3(-1.15, 0.0015, -0.075));
+					matVela19 = glm::scale(matVela19, glm::vec3(0.002, 0.005, 0.002));
+					glBindTexture(GL_TEXTURE_2D, IDtextuCera);
+					cylinder1.render(matVela19);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+			/*****************************************************************************************
+				CASA - TERROR - CERCA
+			******************************************************************************************/
+
+					glm::mat4 Cerca = glm::mat4(1.0);
+					Cerca = glm::translate(Cerca, glm::vec3(-0.2, 0.01, -1.08));
+					Cerca = glm::scale(Cerca, glm::vec3(0.0001, 0.04, 2.0));
+					glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
+					box2.render(Cerca);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 Cerca2 = glm::mat4(1.0);
+					Cerca2 = glm::translate(Cerca2, glm::vec3(-0.2, 0.01, 1.08));
+					Cerca2 = glm::scale(Cerca2, glm::vec3(0.0001, 0.04, 2.0));
+					glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
+					box2.render(Cerca2);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 Cerca3 = glm::mat4(1.0);
+					Cerca3 = glm::translate(Cerca3, glm::vec3(-1.2, 0.01, 2.08));
+					Cerca3 = glm::scale(Cerca3, glm::vec3(2.0, 0.04, 0.0001));
+					glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
+					box2.render(Cerca3);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 Cerca4 = glm::mat4(1.0);
+					Cerca4 = glm::translate(Cerca4, glm::vec3(-1.2, 0.01, -2.08));
+					Cerca4 = glm::scale(Cerca4, glm::vec3(2.0, 0.04, 0.0001));
+					glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
+					box2.render(Cerca4);
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+					glm::mat4 Cerca5 = glm::mat4(1.0);
+					Cerca5 = glm::translate(Cerca5, glm::vec3(-2.2, 0.01, 0.0));
+					Cerca5 = glm::scale(Cerca5, glm::vec3(0.0001, 0.04, 4.1));
+					glBindTexture(GL_TEXTURE_2D, IDtextuReja);
+					shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
+					box2.render(Cerca5);
+					glBindTexture(GL_TEXTURE_2D, 0);
 
 
 

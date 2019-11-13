@@ -41,16 +41,16 @@ void FirstPersonCamera::updateCamera() {
 
 void FirstPersonCamera::moveFrontCamera(bool dir, float dt) {
 	if (dir)
-		this->position += (float)dt * speed/64 * this->front;
+		this->position += (float)dt * speed/20 * this->front;
 	else
-		this->position -= (float)dt * speed/64 * this->front;
+		this->position -= (float)dt * speed/20 * this->front;
 	updateCamera();
 }
 
 void FirstPersonCamera::moveRightCamera(bool dir, float dt) {
 	if (dir)
-		this->position += (float)dt * speed/64 * this->right;
+		this->position += (float)dt * speed/20 * this->right;
 	else
-		this->position -= (float)dt * speed/64 * this->right;
+		this->position -= (float)dt * speed/20 * this->right;
 	updateCamera();
 }
