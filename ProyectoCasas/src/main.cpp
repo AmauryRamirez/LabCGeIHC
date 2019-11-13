@@ -77,7 +77,7 @@ Box boxWall;
 Model modelPuerta1, modelPuerta2;
 
 GLuint IDtextureCarretera, IDtextuLuna, IDtextuVenRot, IDtextuParedTerror, IDtextuCesped, IDtextuCera, IDtextuReja;
-GLuint IDtextuMantel;
+GLuint IDtextuMantel, IDtextuCadePapel;
 GLuint skyboxTextureID;
 
 GLenum types[6] = {
@@ -314,6 +314,27 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	textuPTerror.freeImage(bitmap);
 	//--------------------------
+
+	/**************************************************************************************************************
+				TEXTURA - TENDEDERO
+	***************************************************************************************************************/
+	Texture textuCadePapel("../Textures/CadenaPapel.png");
+	bitmap = textuCadePapel.loadImage(false);
+	data = textuCadePapel.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &IDtextuCadePapel);
+	glBindTexture(GL_TEXTURE_2D, IDtextuCadePapel);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textuCadePapel.freeImage(bitmap);
 
 	/**************************************************************************************************************
 				TEXTURA - LUNA
@@ -1132,6 +1153,14 @@ void applicationLoop() {
 			box1.render(matPata2);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
+
+		//TENDEDEROS PICADOS
+			glm::mat4 Tendedero0 = glm::mat4(1.0);
+			Tendedero0 = glm::translate(Tendedero0, glm::vec3(0.0, 0.1, 0.0));
+			Tendedero0 = glm::scale(Tendedero0, glm::vec3(0.2, 0.2, 0.2));
+			glBindTexture(GL_TEXTURE_2D, IDtextuCadePapel); 
+			box1.render(Tendedero0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 		//VENTANAS
 		glm::mat4 matVenta1 = glm::mat4(1.0);
