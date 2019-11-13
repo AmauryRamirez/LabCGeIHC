@@ -1,0 +1,3 @@
+the textures might not match (.dae and .skp texture will work).  You might have to delete it all and then apply it by yourselves.  .obj, .3ds, and .fbx may have problems due to conversion
+the textures are in its own folder and you can reapply it exactly by following the skp or .dae model.
+williamliu12345 is not responsible for any damage or malfunction to your hardrive, computer, software, etc.
