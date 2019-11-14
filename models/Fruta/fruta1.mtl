@@ -1,0 +1,97 @@
+# Blender MTL File: 'Nectarins-peaches_obj.obj'
+# Material Count: 7
+
+newmtl Bowl_for_figsw
+Ns 49.019608
+Ka 0.588000 0.588000 0.588000
+Kd 0.345100 0.247100 0.078400
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd bowl.jpg
+map_Bump bowl_bump.jpg
+map_Ka bowl.jpg
+refl Mask_Mask.tga
+
+newmtl Material__2126310377
+Ns 41.176471
+Ka 0.588000 0.588000 0.588000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+refl Raytrace_Raytrace.tga
+
+newmtl Nectarine
+Ns 49.019608
+Ka 0.588000 0.588000 0.588000
+Kd 0.500000 0.500000 0.500000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd Nectarines.jpg
+map_Bump Nectarine-glossy.jpg
+map_Ka Nectarines.jpg
+refl Mask_Mask.tga
+
+newmtl Nectarine2
+Ns 49.019608
+Ka 0.588000 0.588000 0.588000
+Kd 0.500000 0.500000 0.500000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd Nectarine-2.jpg
+map_Bump Nectarine-glossy.jpg
+map_Ka Nectarine-2.jpg
+refl Mask_Mask.tga
+
+newmtl Peach
+Ns 15.686275
+Ka 0.588000 0.588000 0.588000
+Kd 0.709800 0.709800 0.709800
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd Peach.jpg
+map_Bump Peach-bump.jpg
+map_Ka Peach.jpg
+refl Map__2070297661_Falloff.tga
+
+newmtl Peach2
+Ns 15.686275
+Ka 0.588000 0.588000 0.588000
+Kd 0.709800 0.709800 0.709800
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd Peach2.jpg
+map_Bump Peach-bump.jpg
+map_Ka Peach2.jpg
+refl Map__2070297661_Falloff.tga
+
+newmtl Wood_bowl
+Ns 49.019608
+Ka 0.588000 0.588000 0.588000
+Kd 0.545100 0.545100 0.545100
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.600000
+d 1.000000
+illum 2
+map_Kd Wood-bowl.jpg
+map_Bump Wood-bowl b.jpg
+map_Ka Wood-bowl.jpg
+refl Raytrace_Raytrace.tga
