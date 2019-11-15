@@ -75,6 +75,10 @@ Box boxCesped;
 Box boxWall;
 // Models complex instances
 Model modelPuerta1, modelPuerta2, modelFruta1, modelFruta2, modelCabeza, modelCalabaza1, modelCalabaza2;
+Model modelJackBrazoD, modelJackBrazoI, modelJackManoI, modelJackManoD, modelJackCabeza, modelJackAntebrazoD, modelJackAntebrazoI;
+Model modelJackPieI, modelJackPieD, modelJackCuerpo, modelJackPelvisI, modelJackPelvisD, modelJackPiernaI, modelJackPiernaD;
+
+Model modelBuhoAlaI, modelBuhoAlaD, modelBuhoCuerpo;
 
 GLuint IDtextureCarretera, IDtextuLuna, IDtextuVenRot, IDtextuParedTerror, IDtextuCesped, IDtextuCera, IDtextuReja;
 GLuint IDtextuMantel, IDtextuPapelGrande, IDtextuCadePapel, IDtextuCadePapel2, IDtextutextuFlores;
@@ -252,15 +256,70 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelFruta2.setShader(&shaderMulLighting);
 	
 	modelCabeza.loadModel("../models/cabeza/Cabeza.obj");
-	modelCabeza.setShader(&shaderMulLighting);*/
+	modelCabeza.setShader(&shaderMulLighting);
 
 	modelCalabaza1.loadModel("../models/Calabaza/Calabaza1.obj");
 	modelCalabaza1.setShader(&shaderMulLighting);
 
 	modelCalabaza2.loadModel("../models/Calabaza/Calabaza2.obj");
-	modelCalabaza2.setShader(&shaderMulLighting);
+	modelCalabaza2.setShader(&shaderMulLighting);*/
 
-	camera->setPosition(glm::vec3(-1.24, 0.01, 0.1));
+
+
+	/*modelJackBrazoD.loadModel("../models/jack/jack_brazo_der.obj");
+	modelJackBrazoD.setShader(&shaderMulLighting);
+
+	modelJackBrazoI.loadModel("../models/jack/jack_brazo_izq.obj");
+	modelJackBrazoI.setShader(&shaderMulLighting);
+
+	modelJackManoI.loadModel("../models/jack/jack_mano_izq.obj");
+	modelJackManoI.setShader(&shaderMulLighting);
+
+	modelJackManoD.loadModel("../models/jack/jack_mano_der.obj");
+	modelJackManoD.setShader(&shaderMulLighting);
+	
+	modelJackCabeza.loadModel("../models/jack/jack_cabeza.obj");
+	modelJackCabeza.setShader(&shaderMulLighting);
+
+	modelJackAntebrazoD.loadModel("../models/jack/jack_hombro_der.obj");
+	modelJackAntebrazoD.setShader(&shaderMulLighting);
+
+	modelJackAntebrazoI.loadModel("../models/jack/jack_hombro_izq.obj");
+	modelJackAntebrazoI.setShader(&shaderMulLighting);
+
+	modelJackPieI.loadModel("../models/jack/jack_pie_izq.obj");
+	modelJackPieI.setShader(&shaderMulLighting);
+
+	modelJackPieD.loadModel("../models/jack/jack_pie_der.obj");
+	modelJackPieD.setShader(&shaderMulLighting);
+
+	modelJackCuerpo.loadModel("../models/jack/jack_cuerpo.obj");
+	modelJackCuerpo.setShader(&shaderMulLighting);
+
+	modelJackPelvisI.loadModel("../models/jack/jack_pelvis_izq.obj");
+	modelJackPelvisI.setShader(&shaderMulLighting);
+
+	modelJackPelvisD.loadModel("../models/jack/jack_pelvis_der.obj");
+	modelJackPelvisD.setShader(&shaderMulLighting);
+
+	modelJackPiernaI.loadModel("../models/jack/jack_pierna_izq.obj");
+	modelJackPiernaI.setShader(&shaderMulLighting);
+
+	modelJackPiernaD.loadModel("../models/jack/jack_pierna_der.obj");
+	modelJackPiernaD.setShader(&shaderMulLighting);*/
+
+	modelBuhoAlaD.loadModel("../models/Buho/AlaD.obj");
+	modelBuhoAlaD.setShader(&shaderMulLighting);
+
+	modelBuhoAlaI.loadModel("../models/Buho/AlaI.obj");
+	modelBuhoAlaI.setShader(&shaderMulLighting);
+
+	modelBuhoCuerpo.loadModel("../models/Buho/Cuerpo.obj");
+	modelBuhoCuerpo.setShader(&shaderMulLighting);
+
+
+
+	camera->setPosition(glm::vec3(0.1, 0.1, 0.1));
 
 	int imageWidth, imageHeight;
 
@@ -377,7 +436,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	/**************************************************************************************************************
 			TEXTURA - TENDEDERO2
 ***************************************************************************************************************/
-	Texture textuCadePapel2("../Textures/CadenaPapel.png");
+	Texture textuCadePapel2("../Textures/papelPicado.png");
 	bitmap = textuCadePapel2.loadImage(false);
 	data = textuCadePapel2.convertToData(bitmap, imageWidth, imageHeight);
 	glGenTextures(1, &IDtextuCadePapel2);
@@ -663,7 +722,18 @@ void applicationLoop() {
 	float angle = 0.0;
 	float ratio = 100.0;
 
-	bool Pos0 = false;
+	int statePajaro = 0;
+	float rotBuhoAlas = 0.0, advanceBuho=0.0;
+	float tamanioPajaro = 0.001;
+
+	glm::mat4 matBuhoCuerpo = glm::mat4(1.0);
+	matBuhoCuerpo = glm::translate(matBuhoCuerpo, glm::vec3(-1.7, 0.8, 0.0));
+	matBuhoCuerpo = glm::scale(matBuhoCuerpo, glm::vec3(0.1, 0.1, 0.1));
+	glm::mat4 matBuhoAlaD = glm::mat4(matBuhoCuerpo);
+	glm::mat4 matBuhoAlaI = glm::mat4(matBuhoCuerpo);
+
+
+
 
 
 	while (psi) {
@@ -1768,6 +1838,7 @@ void applicationLoop() {
 		glBindTexture(GL_TEXTURE_2D, IDtextuReja);
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
 		box2.render(Cerca2);
+		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 Cerca3 = glm::mat4(1.0);
@@ -1776,6 +1847,7 @@ void applicationLoop() {
 		glBindTexture(GL_TEXTURE_2D, IDtextuReja);
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
 		box2.render(Cerca3);
+		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 Cerca4 = glm::mat4(1.0);
@@ -1784,6 +1856,7 @@ void applicationLoop() {
 		glBindTexture(GL_TEXTURE_2D, IDtextuReja);
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
 		box2.render(Cerca4);
+		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glm::mat4 Cerca5 = glm::mat4(1.0);
@@ -1792,8 +1865,142 @@ void applicationLoop() {
 		glBindTexture(GL_TEXTURE_2D, IDtextuReja);
 		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(40.0, 1.0)));
 		box2.render(Cerca5);
+		shaderMulLighting.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(1.0, 1.0)));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		/*****************************************************************************************
+		CASA - TERROR - JACK
+		******************************************************************************************/
+		glm::mat4 jackCuerpo = glm::mat4(1.0);
+		jackCuerpo = glm::translate(jackCuerpo, glm::vec3(-7.0, 0.0, 0.0));
+		modelJackCuerpo.render(jackCuerpo);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackCabeza = glm::mat4(jackCuerpo);
+		modelJackCabeza.render(jackCabeza);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackAntebrazoI = glm::mat4(jackCuerpo);
+		modelJackAntebrazoI.render(jackAntebrazoI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackAntebrazoD = glm::mat4(jackCuerpo);
+		modelJackAntebrazoD.render(jackAntebrazoD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackBrazoI = glm::mat4(jackAntebrazoI);
+		modelJackBrazoI.render(jackBrazoI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackBrazoD = glm::mat4(jackAntebrazoD);
+		modelJackBrazoD.render(jackBrazoD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackManoI = glm::mat4(jackBrazoI);
+		modelJackManoI.render(jackManoI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		glm::mat4 jackManoD = glm::mat4(jackBrazoD);
+		modelJackManoD.render(jackManoD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPelvisI = glm::mat4(jackCuerpo);
+		modelJackPelvisI.render(jackPelvisI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPelvisD = glm::mat4(jackCuerpo);
+		modelJackPelvisD.render(jackPelvisD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPiernaI = glm::mat4(jackPelvisI);
+		modelJackPiernaI.render(jackPiernaI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPiernaD = glm::mat4(jackPelvisI);
+		modelJackPiernaD.render(jackPiernaD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPieI = glm::mat4(jackPiernaI);
+		modelJackPieI.render(jackPieI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glm::mat4 jackPieD = glm::mat4(jackPiernaD);
+		modelJackPieD.render(jackPieD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		/*****************************************************************************************
+		CASA - TERROR - JACK
+		******************************************************************************************/
+		
+		modelBuhoCuerpo.render(matBuhoCuerpo);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		modelBuhoAlaD.render(matBuhoAlaD);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		modelBuhoAlaI.render(matBuhoAlaI);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+		switch (statePajaro) {
+		case 0:
+			//matBuhoCuerpo = glm::translate(matBuhoCuerpo, glm::vec3(0.0, 0.0, 0.01));
+
+			//matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(0.0, 0.0, 0.01));
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(-0.467966, -1.12091, 4.39238));
+			matBuhoAlaD = glm::rotate(matBuhoAlaD, glm::radians(0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(0.467966, 1.12091, -4.39238));
+
+			//matBuhoAlaI = glm::translate(matBuhoAlaD, glm::vec3(0.0, 0.0, 0.01));
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(0.464658, -1.11993, 4.39302));
+			matBuhoAlaI = glm::rotate(matBuhoAlaI, glm::radians(-0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(-0.464658, 1.11993, -4.39302));
+
+			rotBuhoAlas += 0.5;
+			if (rotBuhoAlas >= 45.0) {
+				statePajaro = 1;
+				rotBuhoAlas = 0.0;
+			}
+			break;
+
+		case 1:
+			// = glm::scale(matBuhoCuerpo, glm::vec3(,,));
+
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(-0.467966, -1.12091, 4.39238));
+			matBuhoAlaD = glm::rotate(matBuhoAlaD, glm::radians(-0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(0.467966, 1.12091, -4.39238));
+
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(0.467966, -1.12091, 4.39238));
+			matBuhoAlaI = glm::rotate(matBuhoAlaI, glm::radians(0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(-0.467966, 1.12091, -4.39238));
+
+	
+			rotBuhoAlas += 0.5;
+			if (rotBuhoAlas >= 90.0) {
+				statePajaro = 2;
+				rotBuhoAlas = 0.0;
+			}
+			break;
+
+		case 2:
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(-0.467966, -1.12091, 4.39238));
+			matBuhoAlaD = glm::rotate(matBuhoAlaD, glm::radians(0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaD = glm::translate(matBuhoAlaD, glm::vec3(0.467966, 1.12091, -4.39238));
+
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(0.467966, -1.12091, 4.39238));
+			matBuhoAlaI = glm::rotate(matBuhoAlaI, glm::radians(-0.5f), glm::vec3(0.0, 0.0, 1.0));
+			matBuhoAlaI = glm::translate(matBuhoAlaI, glm::vec3(-0.467966, 1.12091, -4.39238));
+
+			rotBuhoAlas += 0.5;
+			if (rotBuhoAlas >= 90.0) {
+				statePajaro = 1;
+				rotBuhoAlas = 0.0;
+			}
+			break;
+
+
+		}
 
 
 		if (angle > 2 * M_PI)

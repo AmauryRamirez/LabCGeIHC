@@ -724,6 +724,8 @@ void applicationLoop() {
 
 
 
+	
+
 
 	lastTime = TimeManager::Instance().GetTime();
 	while (psi) {
